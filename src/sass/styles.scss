@@ -27,6 +27,10 @@ button {
 }
 .weather__box {
     width: 50%;
+    background-color: #00000062;
+    border-radius: 5px;
+    padding: 10px;
+    color: #ffffff;
 }
 .forecast__weather {
     display: flex;
@@ -48,4 +52,34 @@ button {
         right: 0;
         top: 0;
     }
+}
+.mapbox__container {
+    position: relative;
+    max-width: 350px;
+    mask-image: url(../img/phone-template.png);
+    mask-size: 97% 97%;
+    mask-repeat: no-repeat;
+    border: 25px solid #000000;
+}
+.mock {
+   position: absolute;
+    /*background-image: url(../img/phone-template.png);*/
+}
+.controls__fullscreen {
+    position: absolute;
+	bottom: 0;
+	right: 42%;
+	padding: 10px;
+}
+.controls__navigation {
+    position: absolute;
+	top: 12px;
+	right: 10px;
+    padding: 10px;
+}
+.controls__geolocate {
+    position: absolute;
+	top: 12px;
+	left: 0;
+    padding: 10px;
 }

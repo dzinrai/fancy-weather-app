@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun } from '@fortawesome/free-solid-svg-icons';
+import { faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from './components/Button';
 import Search from './components/Search';
 import DropButton from './components/DropButton';
@@ -9,7 +10,8 @@ import WeatherBox from './components/WeatherBox';
 import ErrorLog from './components/ErrorLog';
 import '../node_modules/mapbox-gl/dist/mapbox-gl.css';
 import Map from './components/Map';
-
+//map-marker-alt
+//https://api.unsplash.com/photos/random?orientation=landscape&per_page=50&query=nature&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek
 //units=imperial
 //bd684c495ea077a1a37279e1c4dcc4e5
 //mapbox
@@ -26,7 +28,7 @@ async function fetchAPI(url) {
 	return data;
 }
 
-library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun);
+library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt);
 
 function App(props) {
 	const [units, setUnits] = useState('metric');
@@ -45,13 +47,18 @@ function App(props) {
 	const [forecast, setForecast] = useState(null);
 	const [error, setError] = useState(null);
 	const [mapUpdated, setMapUpdated] = useState({update: false});
+	const [background, setBackground] = useState(JSON.parse(localStorage.getItem('image')));
+	const backgroundStyle = {
+		background: 'url(' + background.urls.full +')',
+		backgroundSize: 'cover'
+	};
 
 	useEffect(() => {     
 		if (userLocation === null) {
 			async function preLoad() {
 				const data = await fetchAPI(urlGeo);
 				if (!data) {
-					setUserLocation({lat: 53.9,lon: 27.57});
+					setUserLocation({lat: 0,lon: 0});
 					return null;
 				}
 				setOpenData((openData) => ({
@@ -68,7 +75,19 @@ function App(props) {
 			}
 			preLoad();
 		}
-	}, [userLocation, openData.weather]);
+		if (background === null) {
+			if (localStorage.getItem('image')) {
+				return;
+			}
+			const unsUrl = `https://api.unsplash.com/photos/random?orientation=landscape&per_page=50&query=nature&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek`;
+			async function preLoadImg() {
+				const data = await fetchAPI(unsUrl);
+				localStorage.setItem('image', JSON.stringify(data));
+				setBackground(data);
+			}
+			preLoadImg();
+		}
+	}, [userLocation, openData.weather, background]);
 	// 
 	async function weatherGoTemp(targetCity) {
 		const urlCity = !targetCity ? openData.city : targetCity;
@@ -121,7 +140,7 @@ function App(props) {
 	if (!userLocation) return <h2>Loading location...</h2>;
 	if (!openData.weather) return <h2>Loading weather...</h2>;
 	return (
-		<div className='app__container'>
+		<div className='app__container' style={backgroundStyle}>
 			<header>
 				<Button classes='' icon='sync-alt' />
 				<DropButton classes='' />
@@ -145,8 +164,11 @@ function App(props) {
 					forecast={forecast !== null ? forecast : []}
 					timezone={openData.timezone}
 				/>
+				
 				<div className='mapbox__container'>
 					<Map lon={lon} lat={lat} mapUpdated={mapUpdated} updateEnd={mapUpdatedEnd}  />
+				</div>
+				<div className='mock'>
 					<span>Latitude: {lat? lat.toFixed(2) : '0'}</span><br />
 					<span>Longitude: {lon ? lon.toFixed(2) : '0'}</span>
 				</div>

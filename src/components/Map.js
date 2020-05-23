@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import ReactMapGL, { Marker, NavigationControl } from 'react-map-gl';
+import ReactMapGL, { Marker, NavigationControl,FullscreenControl,GeolocateControl } from 'react-map-gl';
+
 
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYWxleG1hbGtvdiIsImEiOiJja2FjaDU5bWUxZ2x6MnNtazdkMWx1MzZiIn0.T9U5tfEljgOS3bBS17wpKA';
 const style = {
@@ -11,17 +12,22 @@ const style = {
 };
 
 function Map(props) {
+	const width = 280;
+	const height = 456;
 	const [viewport, setViewport] = useState({
-		width: 400,
-		height: 400,
+		width: width,
+		height: height,
 		latitude: 53.54,
 		longitude: 27.34,
-		zoom: 8
+		zoom: 8,
+		bearing: 0,
+        pitch: 0
 	});
 	const [marker, setMarker] = useState({
 		latitude: 53.54,
 		longitude: 27.34
 	});
+
 	const update = props.mapUpdated.update;
 	const updateEnd = props.updateEnd;
 	const lon = props.mapUpdated.lon;
@@ -45,12 +51,22 @@ function Map(props) {
 	function updateControl(view) {
 		setViewport(view);
 	}
+	function _clickHandler(e) {
+		if (e.target.className === 'mapboxgl-ctrl-icon') {
+			setViewport({
+				...viewport, 
+				width: width,
+				height: height
+			});
+		}
+	}
 	return (
 		<ReactMapGL
 			{...viewport}
-			mapStyle="mapbox://styles/mapbox/light-v9"
+			mapStyle="mapbox://styles/mapbox/streets-v11"
 			mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
 			onViewportChange={(viewport) => updateControl(viewport)}
+			onClick={(e) => _clickHandler(e)}
 		>
 			<Marker
 				longitude={props.lon ? props.lon : 27}
@@ -66,9 +82,19 @@ function Map(props) {
 			>
 				<div style={style}>Here</div>
 			</Marker>
-			<div className="nav">
+			<div className='controls__navigation'>
 				<NavigationControl />
 			</div>
+			<div className='controls__fullscreen'>
+				<FullscreenControl  />
+			</div>
+			<div className='controls__geolocate'>
+				<GeolocateControl
+					positionOptions={{enableHighAccuracy: true}}
+					trackUserLocation={true}
+				/>
+			</div>
+			
 		</ReactMapGL>
 	);
 	
