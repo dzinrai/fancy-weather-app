@@ -25,7 +25,7 @@ function WeatherBox(props) {
 				<span>HUMIDITY: {main ? main.humidity : '-'}%</span>
 			</div>
 		</div>
-		<FontAwesomeIcon icon='sync-alt' />
+		<FontAwesomeIcon icon='sync-alt' spin/>
 		<div className="forecast__weather">
 			{days.map((day, i) => 
 				<div key={i+1} className="forecast__pin">

@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import ReactMapGL, { Marker, NavigationControl,FullscreenControl,GeolocateControl } from 'react-map-gl';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYWxleG1hbGtvdiIsImEiOiJja2FjaDU5bWUxZ2x6MnNtazdkMWx1MzZiIn0.T9U5tfEljgOS3bBS17wpKA';
-const style = {
-	padding: '10px',
-	color: '#fff',
-	cursor: 'pointer',
-	background: '#000000',
-	borderRadius: '6px'
-};
 
 function Map(props) {
 	const width = 280;
 	const height = 456;
+	const animate = props.animate ? 'animation_allowed' : '';
 	const [viewport, setViewport] = useState({
 		width: width,
 		height: height,
@@ -43,6 +38,7 @@ function Map(props) {
 		}
 	}, [update, lon, lat]);
 	function _onMarkerDragEnd(event){
+		console.log('lon',event.lngLat[0],'lat',event.lngLat[1]);
 		setMarker({
 			longitude: event.lngLat[0],
 			latitude: event.lngLat[1]
@@ -71,19 +67,23 @@ function Map(props) {
 			<Marker
 				longitude={props.lon ? props.lon : 27}
 				latitude={props.lat ? props.lat : 53}
+				offsetTop={-35}
+          		offsetLeft={-28}
 			>
-				<div style={style}>You</div>
+				<FontAwesomeIcon icon='map-marker-alt' className={'marker marker_user ' + animate} />
 			</Marker>
 			<Marker
 				longitude={marker.longitude}
 				latitude={marker.latitude}
+				offsetTop={-35}
+          		offsetLeft={-28}
 				onDragEnd={_onMarkerDragEnd}
 				draggable
 			>
-				<div style={style}>Here</div>
+				<FontAwesomeIcon icon='map-marker-alt' className='marker' />
 			</Marker>
 			<div className='controls__navigation'>
-				<NavigationControl />
+				<NavigationControl onViewportChange={(viewport) => updateControl(viewport)} />
 			</div>
 			<div className='controls__fullscreen'>
 				<FullscreenControl  />

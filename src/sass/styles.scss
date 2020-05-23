@@ -1,3 +1,13 @@
+:root {
+    --themeColor: #140433;
+    --stageColor: #ffffff;
+    --offStageColor: #070122;
+}
+.rootDark {
+    --themeColor: #14012d;
+    --stageColor: #272627;
+    --offStageColor: #0c050e;
+}
 * {
     box-sizing: border-box;
 }
@@ -7,12 +17,15 @@ body {
 .app__container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    position: relative;
+    min-height: 100vh;
 }
 header {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    padding: 10px 0;
 }
 main {
     display: flex;
@@ -82,4 +95,120 @@ button {
 	top: 12px;
 	left: 0;
     padding: 10px;
+}
+.marker {
+    font-size: 50px;
+}
+.marker_user {
+    position: relative;
+    font-size: 50px;
+    color: #02b1b1;
+}
+.marker_user.animation_allowed {
+    animation: blob2 2s linear infinite;
+}
+.menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    transition: all .3s;
+    button {
+        width: 54px;
+        height: 54px;
+        padding: 0;
+        font-size: 36px;
+        border: none;
+        cursor: pointer;
+        color: #ffffff;
+        background-color: #00000041;
+    }
+    button:hover {
+        color: #000000;
+        background-color: #ffffff41;
+        border-radius: 1px;
+    }
+    button:nth-child(n+2) {
+        max-height: 0;
+        overflow: hidden;
+    }
+    
+}
+.menu.opened {
+    max-height: unset;
+    button {
+        position: relative;
+    }
+    button:first-child {
+        transition: all .2s;
+        color: #000000;
+        background-color: #ffffff8e;
+    }
+    button:nth-child(n+2) {
+        display: block;
+        max-height: unset;
+    }
+    button:nth-child(2) {
+        animation: slide-from-top .1s linear 1; 
+    }
+    button:nth-child(3) {
+        animation: slide-from-top .2s linear 1; 
+    }
+}
+/*.settings__switch {
+    
+}*/
+.animation__switch {
+    svg {
+        transition: all .7s;
+    }
+}
+.animation__switch:hover {
+    svg {
+        animation: rotate .7s linear infinite;
+    }
+}
+@keyframes blob2 {
+    0% {
+        transform: translateY(0);
+    }
+    25% {
+        transform: translateY(10%);
+    }
+    50% {
+        transform: translateY(0);
+    }
+    75% {
+        transform: translateY(10%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+@keyframes rotate {
+    from {
+        -ms-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -ms-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+@keyframes slide-from-top {
+    from {
+        top: -10vh;
+        background-color: #000000;
+    }
+    to {
+        top: 0;
+        background-color: #00000041;
+    }
 }
