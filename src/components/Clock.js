@@ -8,7 +8,7 @@ function Clock(props) {
 		return function cleanup() {
 			clearInterval(timerID);
 		};
-	});
+	}, []);
 	function tick() {
 		setDate(new Date());
 	}
