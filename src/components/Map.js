@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYWxleG1hbGtvdiIsImEiOiJja2FjaDU5bWUxZ2x6MnNtazdkMWx1MzZiIn0.T9U5tfEljgOS3bBS17wpKA';
 
 function Map(props) {
-	const width = 280;
+	const width = 270;
 	const height = 456;
 	const animate = props.animate ? 'animation_allowed' : '';
 	const [viewport, setViewport] = useState({
@@ -22,7 +22,6 @@ function Map(props) {
 		latitude: 53.54,
 		longitude: 27.34
 	});
-
 	const update = props.mapUpdated.update;
 	const updateEnd = props.updateEnd;
 	const lon = props.mapUpdated.lon;
@@ -56,10 +55,14 @@ function Map(props) {
 			});
 		}
 	}
+	const stylePref = 'mapbox://styles/mapbox/';
+	const styles = ['streets-v11', 'outdoors-v11','light-v10','dark-v10','satellite-v9','satellite-streets-v11'];  
+	const style = props.night ? stylePref.concat(styles[3]) : stylePref.concat(styles[1]);
+	const customStyle = (props.style !== null && props.style >= 0) ? stylePref.concat(styles[props.style]) : style;
 	return (
 		<ReactMapGL
 			{...viewport}
-			mapStyle="mapbox://styles/mapbox/streets-v11"
+			mapStyle={customStyle}
 			mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
 			onViewportChange={(viewport) => updateControl(viewport)}
 			onClick={(e) => _clickHandler(e)}

@@ -2,11 +2,25 @@
     --themeColor: #140433;
     --stageColor: #ffffff;
     --offStageColor: #070122;
+    --btnBack: #86858594;
+    --btnColor: #fbfbfb;
+    --btnShadow: #000000;
+    --btnActive: #202020;
+    --borderColor: #02b1b1;
+    --inputColor: #f6f6f6;
+    --inputBack: rgba(76, 82, 85, 0.404);
 }
 .rootDark {
     --themeColor: #14012d;
     --stageColor: #272627;
     --offStageColor: #0c050e;
+    --btnBack: #00000094;
+    --btnColor: #ffffff;
+    --btnShadow: #00000062;
+    --btnActive: #424242;
+    --borderColor: #02b1b1;
+    --inputColor: #eeecec;
+    --inputBack: #111111;
 }
 * {
     box-sizing: border-box;
@@ -20,23 +34,185 @@ body {
     justify-content: flex-start;
     position: relative;
     min-height: 100vh;
+    overflow: hidden;
 }
-header {
+.app__container > * {
+    z-index: 1;
+}
+.app__container::before {
+    position: absolute;
+    z-index: 0;
+    content: '';
+    top: 0;
+    width: 100%;
+    height: 200vh;
+    background-color: #000000;
+    opacity: .3;
+}
+.container {
+    margin: 0 auto;
+    width: 100vw;
+    max-width: 1020px;
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    padding: 10px 0;
+    justify-content: space-between;
 }
+.btn__container {
+    display: flex;
+    flex-direction: row;
+}
+.header {
+    padding: 10px 0;
+    .btn__container > * {
+        height: 44px;
+        border-radius: 5px;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+    button {
+        width: 55px;
+        height: 44px;
+        padding: 0;
+        background-color: var(--btnBack);
+        color: var(--btnColor);
+        border: none;
+        line-height: 30px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+    .background__switch {
+        font-size: 16px;
+        width: 44px;
+        background-image: url(../img/refresh.png);
+        background-color: transparent;
+        background-repeat: no-repeat;
+        transition: all .7s;
+    }
+    .background__switch:hover {
+        svg {
+            animation: rotate .7s linear infinite;
+        }
+    }
+    .lang__switch {
+        position: relative;
+        background-color: var(--btnBack);
+        color: var(--btnColor);
+        border-radius: 5px;
+        .switch_select {
+            position: relative;
+            z-index: 1;
+            width: 60px;
+            height: 44px;
+            padding-left: 3px;
+            -moz-appearance: none;
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: transparent;
+            border: none;
+            font-size: 18px;
+            color: var(--btnColor);
+            cursor: pointer;
+            option {
+                background-color: var(--btnBack);
+                color: var(--btnColor);
+            }
+            option:checked,
+            option:hover { 
+                box-shadow: 0 0 10px 100px rgb(4, 30, 39) inset;
+            }
+        }
+        svg {
+            position: absolute;
+            top: 30%;
+            right: 5px;
+        }
+    }
+    button:hover {
+        background-color: var(--btnColor);
+        color: var(--btnActive);
+    }
+    .lang__switch:hover,
+    .lang__switch:focus,
+    .lang__switch:focus-within {
+        background-color: var(--btnColor);
+        select, svg {
+            color: var(--btnActive);
+            cursor: pointer;
+        }
+    }
+}
+.double-btn__container {
+    button {
+        margin: 0;
+        box-shadow: none;
+        border-radius: 0;
+        opacity: 0.3;
+    }
+    button:hover {
+        opacity: 0.8;
+    }
+    .active {
+        opacity: 1;
+    }
+}
+.double-btn__container button:first-child {
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+}
+.double-btn__container button:last-child {
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+}
+//
+.search__container {
+    border-radius: 5px;
+    .search__form {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        width: 100%;
+    }
+    input {
+        padding: 0 10px;
+        font-size: 16px;
+        border: 1px solid var(--btnBack);
+        border-right: none;
+        border-bottom-left-radius: 5px;
+        border-top-left-radius: 5px;
+        color: var(--inputColor);
+        background-color: var(--inputBack);
+    }
+    input:active, input:focus {
+        opacity: 1;
+        border: 1px solid var(--inputColor);
+        border-right: none;
+    }
+    button[type='submit'] {
+        flex: 1 1 30%;
+        width: unset;
+        margin: 0;
+        padding: 0 15px;
+        font-size: 18px;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+        border-bottom-right-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+}
+//
 main {
     display: flex;
     justify-content: space-between;
-    max-width: 1140px;
+    max-width: 1020px;
     width: 100%;
     margin: 0 auto;
+    padding: 30px 0 0;
 }
-button {
-    width: 100px;
-    height: 50px;
+h2 {
+    margin: 0 0 5px;
+    font-size: 30px;
+    line-height: 30px;
 }
 .weather__box {
     width: 50%;
@@ -44,6 +220,52 @@ button {
     border-radius: 5px;
     padding: 10px;
     color: #ffffff;
+    img {
+        width: 100px;
+        height: 100px;
+    }
+}
+.main__weather {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 45px;
+    padding: 5px 10px 30px;
+    .left-box {
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 73%;
+        flex: 1 0 50%;
+        span {
+            font-size: 58px;
+            line-height: 40px;
+            font-weight: bold;
+        }
+        svg {
+            position: relative;
+            top: 3px;
+        }
+    }
+    .right-box {
+        display: flex;
+        flex-wrap: wrap;
+        flex: 1 1 50%;
+        font-size: 22px;
+        span:nth-child(1),
+        span:nth-child(2) {
+            width: 100%;
+        }
+        span:nth-child(3),
+        span:nth-child(4) {
+            align-self: flex-end;
+        }
+        span:last-child {
+            margin: 0 0 0 20px;
+        }
+    }
+
 }
 .forecast__weather {
     display: flex;
@@ -55,22 +277,68 @@ button {
     flex-direction: column;
     position: relative;
     margin: 3px;
-    padding: 5px 70px 5px 5px;
-    border-radius: 3px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 5px;
     background-color: black;
     color: #ffffff;
     overflow: hidden;
+    width: 33%;
+    span {
+        overflow-wrap: break-word;
+    }
     img {
         position: absolute;
-        right: 0;
-        top: 0;
+        width: 70px;
+        height: 70px;
+        right: -10px;
+        top: -10px;
+    }
+    div:not(:first-child) {
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        font-size: 20px;
+    }
+    div:first-child {
+        span {
+            display: inline-block;
+            max-width: 70%;
+        }
+    }
+}
+.map-side__container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    top: -25px;
+    right: -25px;
+}
+.coord__container {
+    position: relative;
+    bottom: 26px;
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 0 auto;
+    padding: 0 0 3px;
+    background-color: var(--inputBack);
+    border-radius: 10px;
+    span {
+        margin: 0 5px;
+        color: #ffffff;
+        
     }
 }
 .mapbox__container {
     position: relative;
-    max-width: 350px;
+    z-index: 1;
+    max-width: 328px;
+    max-height: 510px;
     mask-image: url(../img/phone-template.png);
-    mask-size: 97% 97%;
+    mask-size: 100% 100%;
     mask-repeat: no-repeat;
     border: 25px solid #000000;
 }
@@ -81,18 +349,18 @@ button {
 .controls__fullscreen {
     position: absolute;
 	bottom: 0;
-	right: 42%;
+	right: 40%;
 	padding: 10px;
 }
 .controls__navigation {
     position: absolute;
-	top: 12px;
-	right: 10px;
+	top: 10px;
+	right: 2px;
     padding: 10px;
 }
 .controls__geolocate {
     position: absolute;
-	top: 12px;
+	top: 10px;
 	left: 0;
     padding: 10px;
 }
@@ -133,7 +401,9 @@ button {
         max-height: 0;
         overflow: hidden;
     }
-    
+    button:first-child:active {
+        font-size: 30px;
+    }
 }
 .menu.opened {
     max-height: unset;
@@ -141,7 +411,7 @@ button {
         position: relative;
     }
     button:first-child {
-        transition: all .2s;
+        transition: all .1s;
         color: #000000;
         background-color: #ffffff8e;
     }
@@ -155,10 +425,13 @@ button {
     button:nth-child(3) {
         animation: slide-from-top .2s linear 1; 
     }
+    button:nth-child(4) {
+        animation: slide-from-top2 .3s linear 1; 
+    }
+    button:nth-child(5) {
+        animation: slide-from-top2 .4s linear 1; 
+    }
 }
-/*.settings__switch {
-    
-}*/
 .animation__switch {
     svg {
         transition: all .7s;
@@ -169,6 +442,7 @@ button {
         animation: rotate .7s linear infinite;
     }
 }
+
 @keyframes blob2 {
     0% {
         transform: translateY(0);
@@ -204,11 +478,21 @@ button {
 }
 @keyframes slide-from-top {
     from {
-        top: -10vh;
+        bottom: 10vh;
         background-color: #000000;
     }
     to {
-        top: 0;
+        bottom: 0;
+        background-color: #00000041;
+    }
+}
+@keyframes slide-from-top2 {
+    from {
+        bottom: 10vh;
+        background-color: #000000;
+    }
+    to {
+        bottom: 0;
         background-color: #00000041;
     }
 }

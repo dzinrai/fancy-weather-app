@@ -14,11 +14,11 @@ function Clock(props) {
 	}
 
 	return (
-		<div>
+		<span>
 			{date.toLocaleTimeString(props.country, {
 				timeZone: props.timezone
 			})}
-		</div>
+		</span>
 	);
 
 }

@@ -3,7 +3,9 @@ const darkHolder = document.createElement('span');
 darkHolder.classList.add('hidden');
 darkHolder.classList.add('rootDark');
 document.body.append(darkHolder);
-const cssVariables = ['--themeColor', '--stageColor', '--offStageColor',];
+const cssVariables = ['--themeColor', '--stageColor', '--offStageColor', '--btnBack', 
+'--btnColor', '--btnShadow','--btnActive','--borderColor','--inputColor',
+'--inputBack'];
 const rootLightStyles = getComputedStyle(root);
 const rootDarkStyles = getComputedStyle(darkHolder);
 const dark = { name: 'dark' };

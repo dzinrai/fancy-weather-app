@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSyncAlt, 
-	faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon } from '@fortawesome/free-solid-svg-icons';
-import { faMoon as faMoonRegular } from '@fortawesome/free-regular-svg-icons';
+	faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
+	faCaretDown, faImages, faThermometerQuarter, faSun, faWind, faTint, faSatellite, faStreetView } from '@fortawesome/free-solid-svg-icons';
+import { faMoon as faMoonRegular,
+		 faImages as faImagesRegular  } from '@fortawesome/free-regular-svg-icons';
 import Button from './components/Button';
 import Search from './components/Search';
 import DropButton from './components/DropButton';
@@ -13,6 +15,7 @@ import '../node_modules/mapbox-gl/dist/mapbox-gl.css';
 import Map from './components/Map';
 import Menu from './components/Menu';
 import {light, dark, setTheme} from './components/theme.js';
+import DoubleButton from './components/DoubleButton';
 //map-marker-alt
 //https://api.unsplash.com/photos/random?orientation=landscape&per_page=50&query=nature&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek
 //units=imperial
@@ -32,7 +35,9 @@ async function fetchAPI(url) {
 	return data;
 }
 
-library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, faMoonRegular);
+library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
+	faMoonRegular, faCaretDown, faImages, faImagesRegular, faThermometerQuarter, faSun, faWind, faTint, faSatellite,
+	faStreetView);
 
 function App(props) {
 	const [units, setUnits] = useState('metric');
@@ -53,12 +58,13 @@ function App(props) {
 	const [mapUpdated, setMapUpdated] = useState({update: false});
 	const [background, setBackground] = useState(JSON.parse(localStorage.getItem('image')));
 	const backgroundStyle = background ? {
-		background: 'url(' + background.urls.full +')',
+		backgroundImage: 'url(' + background.urls.full +')',
 		backgroundSize: 'cover'
 	} : {};
 	const [animationOn, setAnimationOn] = useState(true);
 	const [menuOpened, setMenuOpened] = useState(false);
-	let night = false;
+	const [night, setNight] = useState(false);
+	const [mapStyle, setMapStyle] = useState(null);
 
 	useEffect(() => {     
 		if (userLocation === null) {
@@ -86,7 +92,7 @@ function App(props) {
 			if (localStorage.getItem('image')) {
 				return;
 			}
-			const unsUrl = `https://api.unsplash.com/photos/random?orientation=landscape&per_page=50&query=nature&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek`;
+			const unsUrl = `https://api.unsplash.com/photos/random?orientation=landscape&per_page=10&query=nature&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek`;
 			async function preLoadImg() {
 				const data = await fetchAPI(unsUrl);
 				localStorage.setItem('image', JSON.stringify(data));
@@ -99,7 +105,16 @@ function App(props) {
 	async function weatherGoTemp(targetCity) {
 		const urlCity = !targetCity ? openData.city : targetCity;
 		const url = `https://api.openweathermap.org/data/2.5/weather?q=${urlCity}&units=${units}&appid=${apiKey}`;
-		const data = await fetchAPI(url);
+		const weatherLS = localStorage.getItem('weather');
+		let data;
+		//
+		if (weatherLS) {
+			data = JSON.parse(weatherLS);
+		} else {
+			data = await fetchAPI(url);
+			localStorage.setItem('weather', JSON.stringify(data));
+		}
+		//
 		if (data.status && data.status !== 200) {
 			// status: 404, statusText "Not Found"
 			if (openData.weather) {
@@ -125,7 +140,15 @@ function App(props) {
 
 	async function getForecast(pLat, pLon) {
 		const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${pLat}&lon=${pLon}&exclude=current,minutely,hourly&units=${units}&appid=${apiKey}`;
-		const data = await fetchAPI(url);
+		const weatherLS = localStorage.getItem('weatherForecast');
+		let data;
+		//
+		if (weatherLS) {
+			data = JSON.parse(weatherLS);
+		} else {
+			data = await fetchAPI(url);
+			localStorage.setItem('weatherForecast', JSON.stringify(data));
+		}
 		if (!data) {
 			return null;
 		}
@@ -151,26 +174,34 @@ function App(props) {
 		setMenuOpened(!menuOpened);
 	}
 	function lightSwitch() {
-		night = !night;
-		setTheme(night ? dark : light)
-		localStorage.setItem('night', night);
+		const nightM = !night;
+		setNight(nightM);
+		setMapStyle(null);
+		setTheme(nightM ? dark : light);
+		localStorage.setItem('night', nightM);
 	}
 	if (!userLocation) return <h2>Loading location...</h2>;
 	if (!openData.weather) return <h2>Loading weather...</h2>;
 	return (
 		<div className='app__container' style={backgroundStyle}>
-			<header>
-				<Button />
-				<DropButton />
-				<Button text='F' icon='cloud-sun' />
-				<Button text='C' />
-				<Search 
-					text='Search city' 
-					btnText='Search' 
-					startSearch={startSearch}
-				/>
+			<header className='header'>
+				<div className='container'>
+					<div className='btn__container'>
+						<Button className='background__switch' icon={'sync-alt'} />
+						<DropButton className='lang__switch' />
+						<DoubleButton 
+							onClick={[() => setUnits('imperial'), () => setUnits('metric')]}
+							units={units} />
+					</div>
+					<Search 
+						text='Search city' 
+						btnText='Search' 
+						startSearch={startSearch}
+					/>
+				</div>
+				
 			</header>
-			<main>
+			<main className='main'>
 				<WeatherBox
 					city={openData.city}
 					country={openData.country}
@@ -181,20 +212,24 @@ function App(props) {
 					forecast={forecast !== null ? forecast : []}
 					timezone={openData.timezone}
 				/>
+				<div className='map-side__container'>
+					<div className='mapbox__container'>
+						<Map 
+							lon={lon} 
+							lat={lat} 
+							mapUpdated={mapUpdated} 
+							updateEnd={mapUpdatedEnd}  
+							animate={animationOn}
+							night={night}
+							style={mapStyle}
+						/>
+					</div>
+					<div className='coord__container'>
+						<span>Latitude: {lat? lat.toFixed(2) : '0'}</span>
+						<span>Longitude: {lon ? lon.toFixed(2) : '0'}</span>
+					</div>
+				</div>
 				
-				<div className='mapbox__container'>
-					<Map 
-						lon={lon} 
-						lat={lat} 
-						mapUpdated={mapUpdated} 
-						updateEnd={mapUpdatedEnd}  
-						animate={animationOn}
-					/>
-				</div>
-				<div className='mock'>
-					<span>Latitude: {lat? lat.toFixed(2) : '0'}</span><br />
-					<span>Longitude: {lon ? lon.toFixed(2) : '0'}</span>
-				</div>
 			</main>
 			<ErrorLog error={error} />
 			<Menu opened={menuOpened}>
@@ -214,6 +249,16 @@ function App(props) {
 					icon={night ? ['far', 'moon'] : ['fas', 'moon']}
 					className='light__switch' 
 					onClick={lightSwitch}
+				/>
+				<Button 
+					icon={'street-view'}
+					className='mapStyle__switch' 
+					onClick={() => setMapStyle(0)}
+				/>
+				<Button 
+					icon={'satellite'}
+					className='mapStyle__switch' 
+					onClick={() => setMapStyle(5)}
 				/>
 			</Menu>
 			

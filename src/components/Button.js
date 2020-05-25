@@ -5,6 +5,7 @@ function Button(props) {
 	const animate = props.animate;
 	const animClass = animate ? props.animClass : '';
 	const iconClass = props.iconClass + ' ' + animClass;
+
 	return (
 		<button 
 			className={props.className} 
@@ -12,10 +13,10 @@ function Button(props) {
 			type={props.type}
 			value={props.value}
 			>
-			<FontAwesomeIcon 
-				icon={props.icon ? props.icon : 'sync-alt'} 
+			{props.icon && <FontAwesomeIcon 
+				icon={props.icon} 
 				className={iconClass}
-			/>
+			/>}
 			{props.text}
 		</button>
 	);

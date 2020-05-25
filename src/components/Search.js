@@ -9,14 +9,14 @@ function Search(props) {
 		props.startSearch(search);
 	}
 	return (
-		<div>
-			<form onSubmit={handleSubmit}>
+		<div className='search__container'>
+			<form onSubmit={handleSubmit} className='search__form'>
 				<input 
 					className={props.classes} 
 					placeholder={props.text}
 					onChange={(e) => setSearch(e.target.value)}
 				/>
-				<Button text={props.btnText} classes='' type='submit' value='Submit' />
+				<Button text={props.btnText} type='submit' value='Submit' />
 			</form>
 		</div>
 	);
