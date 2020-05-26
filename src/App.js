@@ -18,16 +18,16 @@ import Menu from './components/Menu';
 import {light, dark, setTheme} from './components/theme.js';
 import DoubleButton from './components/DoubleButton';
 import countries from './countries';
-import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL, urlGeo } from './api/apiUrls';
+import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL, urlGeo, getLoc, translateAPI } from './api/apiUrls';
 
 
-async function fetchAPI(url) {
-	console.log(url);
+async function fetchAPI(url, nolog=false) {
+	if (!nolog) console.log(url);
 	const response = await fetch(url);
-	console.log(response);
+	if (!nolog) console.log(response);
 	if (!response.ok) return response;
 	let data = await response.json();
-	console.log(data);
+	if (!nolog) console.log(data);
 	return data;
 }
 function localStorageInit(item) {
@@ -62,17 +62,22 @@ function App(props) {
 	const [background, setBackground] = useState({
 		res: null, loaded: false, styles: {}
 	}); //JSON.parse(localStorage.getItem('image'))
+	const [preload, setPreload] = useState({
+		res: null, styles: {}, inProcess: true
+	});
 	const [animationOn, setAnimationOn] = useState(true);
 	const [menuOpened, setMenuOpened] = useState(false);
 	const [night, setNight] = useState(false);
 	const [mapStyle, setMapStyle] = useState(null);
+	const [query, setQuery] = useState([]);
+	const [cityInfo, setCityInfo] = useState(null);
 	const { t, i18n } = useTranslation();
 	const changeLanguage = lng => {
 		i18n.changeLanguage(lng);
 	};
 	useEffect(() => {
-		updateBackground();
-	}, []);
+		if (openData.weather !== null) updateBackground();
+	}, [openData.weather]);
 	useEffect(() => {     
 		async function preLoad() {
 			const data = await fetchAPI(urlGeo);
@@ -104,7 +109,7 @@ function App(props) {
 			console.log('x');
 			weatherMain();
 		}
-	}, [openData.city, openData.weather]);
+	}, [openData.city]);
 	// 
 	async function weatherMain(targetCity) {
 		const urlCity = !targetCity ? openData.city : targetCity;
@@ -136,6 +141,22 @@ function App(props) {
 		setLon(data.coord.lon);
 		getForecast(data.coord.lat, data.coord.lon);
 		setMapUpdated({update: true, lon: data.coord.lon, lat: data.coord.lat});
+		const info = await getCityInfo(data.name + ', ' + country);
+		/*setOpenData((openData) => ({
+			...openData,
+			city: info.city,
+			country: info.country,
+		}));*/
+	}
+	async function getCityInfo(cityLine) {
+		const cityArray = {};
+		const data1 = await fetchAPI(translateAPI(cityLine, null, 'en'), true);
+		cityArray.en =data1.text[0];
+		const data2 = await fetchAPI(translateAPI(cityLine, null, 'be'), true);
+		cityArray.by =data2.text[0];
+		const data3 = await fetchAPI(translateAPI(cityLine, null, 'ru'), true);
+		cityArray.ru =data3.text[0];
+		setCityInfo(cityArray);
 	}
 
 	async function getForecast(pLat, pLon) {
@@ -145,10 +166,12 @@ function App(props) {
 		if (!data) {
 			return null;
 		}
-		setForecast(data.daily.slice(0,3));
+		setForecast(data.daily.slice(1,4));
 		setOpenData((openData) => ({
 			...openData,
-			timezone: data.timezone
+			timezone: data.timezone,
+			dayTemp: data.daily[0].feels_like.day,
+			nightTemp: data.daily[0].feels_like.night,
 		}));
 	}
 	function startSearch(str) {
@@ -159,19 +182,32 @@ function App(props) {
 	}
 	function updateBackground() {
 		//|| localStorage.getItem('image') === null
-		const unsUrl = backgroundsURL();
+		setPreload({inProcess: true});
+		let bgQuery = [...query];
+		if (openData.weather) {
+			console.log(openData.weather[0].main, bgQuery);
+			if (openData.weather[0].main === 'Snow') bgQuery.push('snow');
+			if (openData.weather[0].main === 'Clouds') bgQuery.push('clouds');
+			if (openData.weather[0].main === 'Rain') bgQuery.push('rain');
+		}
+		
+		const unsUrl = backgroundsURL(bgQuery.join());
 		
 		async function preLoadImg() {
-			const data = await fetchAPI(unsUrl);
-			//localStorage.setItem('image', JSON.stringify(data));
+			let data;
+			//data = await fetchAPI(unsUrl);
 			const res = data ? data.urls.full : defaultBackground;
 			const backgroundStyle = {
 				backgroundImage: 'url(' + res +')',
 				backgroundSize: 'cover'
 			};
-			setBackground({res: res, loaded: false, styles: backgroundStyle});
+			setPreload({inProcess: true, res: res, styles: backgroundStyle});
 		}
 		preLoadImg();
+	}
+	function finishLoad() {
+		setBackground({res: preload.res, styles: preload.styles, loaded: true});
+		setPreload({...preload, inProcess: false});
 	}
 	function mapUpdatedEnd() {
 		setMapUpdated({update: false});
@@ -197,7 +233,13 @@ function App(props) {
 			<header className='header'>
 				<div className='container'>
 					<div className='btn__container'>
-						<Button className='background__switch' icon={'sync-alt'} onClick={updateBackground} />
+						<Button 
+							className='background__switch' 
+							icon={'sync-alt'} 
+							onClick={updateBackground}
+							animate={preload.inProcess}
+							animClass={'fa-spin'}
+						/>
 						<DropButton className='lang__switch' langChanger={(e) => changeLanguage(e)} />
 						<DoubleButton 
 							onClick={[() => setUnits('imperial'), () => setUnits('metric')]}
@@ -213,15 +255,17 @@ function App(props) {
 			</header>
 			<main className='main'>
 				<WeatherBox
-					city={openData.city}
+					openData={openData}
+					cityInfo={cityInfo ? cityInfo[i18n.language] : openData.city.concat(', ').concat(openData.country)}
 					country={openData.country}
 					countryTag={openData.countryTag}
 					main={openData.main}
 					wind={openData.wind}
 					weather={openData.weather ? openData.weather[0] : {}}
-					day1Icon='cloud-rain'
 					forecast={forecast !== null ? forecast : []}
 					timezone={openData.timezone}
+					dayTemp={openData.dayTemp}
+					nightTemp={openData.nightTemp}
 					units={units}
 				/>
 				<div className='map-side__container'>
@@ -244,39 +288,16 @@ function App(props) {
 				
 			</main>
 			<ErrorLog error={error} />
-			<Menu opened={menuOpened}>
-				<Button 
-					icon='cog' 
-					className='settings__switch' 
-					onClick={openMenu}
-				/>
-				<Button 
-					icon='sync-alt' 
-					className='animation__switch' 
-					animClass=''
-					animate={animationOn}
-					onClick={animationSwitch}
-				/>
-				<Button 
-					icon={night ? ['far', 'moon'] : ['fas', 'moon']}
-					className='light__switch' 
-					onClick={lightSwitch}
-				/>
-				<Button 
-					icon={'street-view'}
-					className='mapStyle__switch' 
-					onClick={() => setMapStyle(0)}
-				/>
-				<Button 
-					icon={'satellite'}
-					className='mapStyle__switch' 
-					onClick={() => setMapStyle(5)}
-				/>
-			</Menu>
+			<Menu 
+				opened={menuOpened} 
+				animationOn={animationOn} 
+				onClickArray={[openMenu,animationSwitch,lightSwitch,() => setMapStyle(0),() => setMapStyle(5)]}
+				night={night}
+			/>
 			<img 
 				style={{visibility: 'hidden', position: 'absolute'}}
-				src={background.res ? background.res : defaultBackground}
-				onLoad={() => setBackground({...background, loaded: true})}
+				src={preload.res ? preload.res : defaultBackground}
+				onLoad={finishLoad}
 				alt=''
 			/>
 		</div>

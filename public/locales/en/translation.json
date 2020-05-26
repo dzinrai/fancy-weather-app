@@ -83,5 +83,17 @@
     "light intensity shower rain":	"light intensity shower rain",
     "shower rain":	"shower rain",
     "heavy intensity shower rain":	"heavy intensity shower rain",
-    "ragged shower rain":	"ragged shower rain"
+    "ragged shower rain":	"ragged shower rain",
+
+    "Settings": "Settings",
+    "Animation": "Animation",
+    "Night mode": "Night mode",
+    "Street view": "Street view",
+    "Satellite view": "Satellite view",
+
+    "Now": "Now",
+    "By day": "By day",
+    "At night": "At night",
+    "Wind": "Wind",
+    "Humidity": "Humidity"
 }

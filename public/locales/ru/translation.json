@@ -83,6 +83,18 @@
     "light intensity shower rain":	"легкий дождь",
     "shower rain":	"дождь",
     "heavy intensity shower rain":	"сильный дождь",
-    "ragged shower rain":	"рваный дождь"
+    "ragged shower rain":	"рваный дождь",
+
+    "Settings": "Настройки",
+    "Animation": "Анимации",
+    "Night mode": "Ночной режим",
+    "Street view": "Обычная карта",
+    "Satellite view": "Спутниковая карта",
+
+    "Now": "Сейчас",
+    "By day": "Днем",
+    "At night": "Ночью",
+    "Wind": "Ветер",
+    "Humidity": "Влажность"
 
 }

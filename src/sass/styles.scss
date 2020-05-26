@@ -28,6 +28,9 @@
 body {
     margin: 0;
 }
+button {
+    position: relative;
+}
 .app__container {
     display: flex;
     flex-direction: column;
@@ -35,6 +38,8 @@ body {
     position: relative;
     min-height: 100vh;
     overflow: hidden;
+    background: rgb(255,255,251);
+    background: radial-gradient(circle, rgba(255,255,251,1) 0%, rgba(148,187,233,1) 100%);
 }
 .app__container > * {
     z-index: 1;
@@ -93,9 +98,12 @@ body {
         transition: all .7s;
     }
     .background__switch:hover {
-        svg {
-            animation: rotate .7s linear infinite;
+        svg:not(.fa-spin) {
+            animation: rotate 6s linear infinite;
         }
+    }
+    .background__switch .fa-spin {
+        animation: rotate .7s linear infinite;
     }
     .lang__switch {
         position: relative;
@@ -240,22 +248,32 @@ main {
     justify-content: space-between;
     font-size: 45px;
     padding: 5px 10px 30px;
+    .during__temps {
+        flex: 1 0 100%;
+        font-size: 28px;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+    }
+    .average_temp {
+        font-size: 58px;
+        line-height: 40px;
+        font-weight: bold;
+    }
     .left-box {
         position: relative;
         display: flex;
-        flex-direction: row;
         align-items: center;
+        flex-wrap: wrap;
         width: 73%;
         flex: 1 0 50%;
-        span {
-            font-size: 58px;
-            line-height: 40px;
-            font-weight: bold;
-        }
         svg {
             position: relative;
             top: 3px;
             margin-right: 5px;
+        }
+        .night_temp, .day_temp {
+            padding: 3px;
         }
     }
     .right-box {
@@ -291,9 +309,10 @@ main {
     flex-direction: column;
     position: relative;
     margin: 3px;
-    padding: 5px 5px 5px 5px;
+    padding: 7px;
     border-radius: 5px;
-    background-color: black;
+    background-color: #0000005d;
+    box-shadow: 2px 2px #000;
     color: #ffffff;
     overflow: hidden;
     width: 33%;
@@ -307,23 +326,50 @@ main {
         right: -10px;
         top: -10px;
     }
-    div:not(:first-child) {
+    .forecast__line {
         display: flex;
         width: 100%;
         flex-direction: row;
         justify-content: space-between;
         font-size: 20px;
+        svg {
+            margin: 0 2px;
+        }
+        span {
+            padding: 3px;
+        }
     }
-    div:first-child {
+    .forecast__head {
+        display: flex;
+        flex-direction: column;
         span {
             display: inline-block;
             max-width: 70%;
+        }
+        .forecast__day {
+            margin: 0 0 4px;
+        }
+        .forecast__desc {
+            margin: 0 0 4px 5px;
+            font-size: 14px;
         }
     }
 }
 .forecast__desc {
     height: 42px;
     max-height: 42px;
+}
+.night_temp:hover {
+    color: #fcfdb0;
+    background-color: var(--btnActive);
+    border-radius: 5px;
+    cursor: pointer;
+}
+.day_temp:hover {
+    color: #fdd316;
+    background-color: var(--btnActive);
+    border-radius: 5px;
+    cursor: pointer;
 }
 .map-side__container {
     position: relative;
@@ -460,7 +506,27 @@ main {
         animation: rotate .7s linear infinite;
     }
 }
-
+.tooltip__target-box {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+}
+.tooltip1 {
+    background-color: var(--btnActive) !important;  
+    font-size: 16px !important;
+}
+.tooltip1.place-top::after {
+    border-top-color: var(--btnActive) !important;
+    border-top-style: solid !important;
+    border-top-width: 6px !important;
+}
+.tooltip1.place-left::after {
+    border-left-color: var(--btnActive) !important;
+    border-left-style: solid !important;
+    border-left-width: 6px !important;
+}
 @keyframes blob2 {
     0% {
         transform: translateY(0);

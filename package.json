@@ -19,6 +19,7 @@
     "react-i18next": "^11.5.0",
     "react-map-gl": "^5.2.5",
     "react-scripts": "3.4.1",
+    "react-tooltip": "^4.2.6",
     "react-yandex-maps": "^4.3.0"
   },
   "scripts": {

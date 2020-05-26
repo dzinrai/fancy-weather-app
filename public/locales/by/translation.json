@@ -83,5 +83,17 @@
     "light intensity shower rain":	"лёгкі інтэнсіўны дождж",
     "shower rain":	"лівень",
     "heavy intensity shower rain":	"моцны дождж з дажджом",
-    "ragged shower rain":	"ірваны дождж"
+    "ragged shower rain":	"ірваны дождж",
+
+    "Settings": "Налады",
+    "Animation": "Анімацыя",
+    "Night mode": "Начны рэжым",
+    "Street view": "Звычайная карта",
+    "Satellite view": "Cпадарожнікавая карта",
+
+    "Now": "Зараз",
+    "By day": "Днём",
+    "At night": "Ноччу",
+    "Wind": "Вецер",
+    "Humidity": "Вільготнасць"
 }

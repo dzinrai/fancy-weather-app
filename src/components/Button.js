@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ReactTooltip from 'react-tooltip';
 
 function Button(props) {
-	const animate = props.animate;
-	const animClass = animate ? props.animClass : '';
-	const iconClass = props.iconClass + ' ' + animClass;
+	const [animation, setAnimation] = useState('');
+	const animClass = props.animClass;
+
+	useEffect(() => {
+		if (props.animate) setAnimation(animClass);
+		else setAnimation('');
+	}, [props.animate]);
 
 	return (
 		<button 
@@ -15,9 +20,13 @@ function Button(props) {
 			>
 			{props.icon && <FontAwesomeIcon 
 				icon={props.icon} 
-				className={iconClass}
+				className={props.iconClass + ' ' + animation}
 			/>}
 			{props.text}
+			{props.tooltip && <span data-tip data-for={props.tooltip.id} className='tooltip__target-box'></span>}
+			{props.tooltip && <ReactTooltip id={props.tooltip.id} type='error' className='tooltip1'>
+				<span>{props.tooltip.text}</span>
+			</ReactTooltip>}
 		</button>
 	);
 	
