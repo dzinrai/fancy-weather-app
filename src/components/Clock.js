@@ -17,7 +17,7 @@ function Clock(props) {
 		<span>
 			{date.toLocaleTimeString(props.country, {
 				timeZone: props.timezone
-			})}
+			}).split(' ').slice(0,-1).join('')}
 		</span>
 	);
 

@@ -10,9 +10,13 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "i18next": "^19.4.5",
+    "i18next-browser-languagedetector": "^4.2.0",
+    "i18next-http-backend": "^1.0.12",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-i18next": "^11.5.0",
     "react-map-gl": "^5.2.5",
     "react-scripts": "3.4.1",
     "react-yandex-maps": "^4.3.0"

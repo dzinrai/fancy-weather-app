@@ -4,6 +4,7 @@ import Button from './Button';
 
 function DoubleButton(props) {
 	const units = props.units;
+	localStorage.setItem('units', props.units ? props.units : 'metric');
 
 	return (
 		<div className='double-btn__container'>

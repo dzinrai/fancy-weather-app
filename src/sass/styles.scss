@@ -39,7 +39,8 @@ body {
 .app__container > * {
     z-index: 1;
 }
-.app__container::before {
+.app__container::before,
+.bg__fog {
     position: absolute;
     z-index: 0;
     content: '';
@@ -48,6 +49,9 @@ body {
     height: 200vh;
     background-color: #000000;
     opacity: .3;
+}
+.bg__fog {
+    opacity: .5;
 }
 .container {
     margin: 0 auto;
@@ -209,10 +213,15 @@ main {
     margin: 0 auto;
     padding: 30px 0 0;
 }
-h2 {
+.city {
     margin: 0 0 5px;
     font-size: 30px;
     line-height: 30px;
+    font-weight: bold;
+}
+.time {
+    font-size: 20px;
+    line-height: 20px;
 }
 .weather__box {
     width: 50%;
@@ -246,13 +255,17 @@ h2 {
         svg {
             position: relative;
             top: 3px;
+            margin-right: 5px;
         }
     }
     .right-box {
         display: flex;
         flex-wrap: wrap;
         flex: 1 1 50%;
-        font-size: 22px;
+        font-size: 20px;
+        span:nth-child(1) {
+            font-size: 16px;
+        }
         span:nth-child(1),
         span:nth-child(2) {
             width: 100%;
@@ -260,6 +273,7 @@ h2 {
         span:nth-child(3),
         span:nth-child(4) {
             align-self: flex-end;
+            font-size: 28px;
         }
         span:last-child {
             margin: 0 0 0 20px;
@@ -306,6 +320,10 @@ h2 {
             max-width: 70%;
         }
     }
+}
+.forecast__desc {
+    height: 42px;
+    max-height: 42px;
 }
 .map-side__container {
     position: relative;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './App.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSyncAlt, 
@@ -16,6 +17,8 @@ import Map from './components/Map';
 import Menu from './components/Menu';
 import {light, dark, setTheme} from './components/theme.js';
 import DoubleButton from './components/DoubleButton';
+import countries from './countries';
+import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL } from './api/apiUrls';
 //map-marker-alt
 //https://api.unsplash.com/photos/random?orientation=landscape&per_page=50&query=nature&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek
 //units=imperial
@@ -24,7 +27,7 @@ import DoubleButton from './components/DoubleButton';
 //pk.eyJ1IjoiYWxleG1hbGtvdiIsImEiOiJja2FjaDU5bWUxZ2x6MnNtazdkMWx1MzZiIn0.T9U5tfEljgOS3bBS17wpKA
 
 const urlGeo = 'https://ipinfo.io/json?token=f9ba6cadb300c1';
-const apiKey = '8e204846034648c1fccc42fae990e7be';
+
 async function fetchAPI(url) {
 	console.log(url);
 	const response = await fetch(url);
@@ -34,13 +37,19 @@ async function fetchAPI(url) {
 	console.log(data);
 	return data;
 }
-
+function localStorageInit(item) {
+	const value = localStorage.getItem(item);
+	if (value) {
+		return value;
+	}
+	if (item === 'units') return 'metric';
+}
 library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
 	faMoonRegular, faCaretDown, faImages, faImagesRegular, faThermometerQuarter, faSun, faWind, faTint, faSatellite,
 	faStreetView);
 
 function App(props) {
-	const [units, setUnits] = useState('metric');
+	const [units, setUnits] = useState(localStorageInit('units'));
 	const [openData, setOpenData] = useState({
 		city: 'Minsk',
 		country: 'Belarus',
@@ -60,11 +69,18 @@ function App(props) {
 	const backgroundStyle = background ? {
 		backgroundImage: 'url(' + background.urls.full +')',
 		backgroundSize: 'cover'
-	} : {};
+	} : {
+		backgroundImage: 'url(' + defaultBackground +')',
+		backgroundSize: 'cover'
+	};
 	const [animationOn, setAnimationOn] = useState(true);
 	const [menuOpened, setMenuOpened] = useState(false);
 	const [night, setNight] = useState(false);
 	const [mapStyle, setMapStyle] = useState(null);
+	const { t, i18n } = useTranslation();
+	const changeLanguage = lng => {
+		i18n.changeLanguage(lng);
+	};
 
 	useEffect(() => {     
 		if (userLocation === null) {
@@ -92,7 +108,7 @@ function App(props) {
 			if (localStorage.getItem('image')) {
 				return;
 			}
-			const unsUrl = `https://api.unsplash.com/photos/random?orientation=landscape&per_page=10&query=nature&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek`;
+			const unsUrl = backgroundsURL();
 			async function preLoadImg() {
 				const data = await fetchAPI(unsUrl);
 				localStorage.setItem('image', JSON.stringify(data));
@@ -104,7 +120,7 @@ function App(props) {
 	// 
 	async function weatherGoTemp(targetCity) {
 		const urlCity = !targetCity ? openData.city : targetCity;
-		const url = `https://api.openweathermap.org/data/2.5/weather?q=${urlCity}&units=${units}&appid=${apiKey}`;
+		const url = weatherURL(urlCity);
 		const weatherLS = localStorage.getItem('weather');
 		let data;
 		//
@@ -122,16 +138,22 @@ function App(props) {
 			}
 			return null;
 		}
+		let country;
+		countries.forEach((countryT) => {
+			if (countryT.code === data.sys.country) country = countryT.name;
+		});
+		//1a72d9365e6b4965a0ac1704fb67223c
+		//https://api.opencagedata.com/geocode/v1/json?q=LAT+LNG&key=1a72d9365e6b4965a0ac1704fb67223c
+		//`https://api.opencagedata.com/geocode/v1/json?q=${data.coord.lat}+${data.coord.lon}&key=1a72d9365e6b4965a0ac1704fb67223c`
 		setOpenData({
 			city: data.name,
-			country: data.sys.country,
+			country: country,
 			main: data.main,
 			wind: data.wind,
 			weather: data.weather,
 			clouds: data.clouds
 		});
 		setError(null);
-		// create new map
 		setLat(data.coord.lat);
 		setLon(data.coord.lon);
 		getForecast(data.coord.lat, data.coord.lon);
@@ -139,7 +161,7 @@ function App(props) {
 	}
 
 	async function getForecast(pLat, pLon) {
-		const url = `https://api.openweathermap.org/data/2.5/onecall?lat=${pLat}&lon=${pLon}&exclude=current,minutely,hourly&units=${units}&appid=${apiKey}`;
+		const url = weather3daysURL(pLat, pLon);
 		const weatherLS = localStorage.getItem('weatherForecast');
 		let data;
 		//
@@ -184,18 +206,19 @@ function App(props) {
 	if (!openData.weather) return <h2>Loading weather...</h2>;
 	return (
 		<div className='app__container' style={backgroundStyle}>
+			{night && <div className='bg__fog'></div>}
 			<header className='header'>
 				<div className='container'>
 					<div className='btn__container'>
 						<Button className='background__switch' icon={'sync-alt'} />
-						<DropButton className='lang__switch' />
+						<DropButton className='lang__switch' langChanger={(e) => changeLanguage(e)} />
 						<DoubleButton 
 							onClick={[() => setUnits('imperial'), () => setUnits('metric')]}
 							units={units} />
 					</div>
 					<Search 
-						text='Search city' 
-						btnText='Search' 
+						text={t('Search city')}
+						btnText={t('Search')}
 						startSearch={startSearch}
 					/>
 				</div>
@@ -211,6 +234,7 @@ function App(props) {
 					day1Icon='cloud-rain'
 					forecast={forecast !== null ? forecast : []}
 					timezone={openData.timezone}
+					units={units}
 				/>
 				<div className='map-side__container'>
 					<div className='mapbox__container'>
