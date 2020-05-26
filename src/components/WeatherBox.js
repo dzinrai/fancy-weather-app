@@ -34,7 +34,7 @@ function WeatherBox(props) {
 	return (
 	<div className="weather__box">
 		<h2 className='city'>{props.city}, {props.country}</h2>
-		<span className='time'>{`${t(dayName)} ${day.getDate()} ${t(month)} `}</span><Clock country={props.country} timezone={props.timezone} />
+		<span className='time'>{`${t(dayName)} ${day.getDate()} ${t(month)} `}</span><Clock countryTag={props.countryTag} timezone={props.timezone} />
 		<div>
 			<div className='main__weather'>
 				<div className='left-box'>

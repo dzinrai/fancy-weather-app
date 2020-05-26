@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import './App.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -18,15 +18,8 @@ import Menu from './components/Menu';
 import {light, dark, setTheme} from './components/theme.js';
 import DoubleButton from './components/DoubleButton';
 import countries from './countries';
-import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL } from './api/apiUrls';
-//map-marker-alt
-//https://api.unsplash.com/photos/random?orientation=landscape&per_page=50&query=nature&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek
-//units=imperial
-//bd684c495ea077a1a37279e1c4dcc4e5
-//mapbox
-//pk.eyJ1IjoiYWxleG1hbGtvdiIsImEiOiJja2FjaDU5bWUxZ2x6MnNtazdkMWx1MzZiIn0.T9U5tfEljgOS3bBS17wpKA
+import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL, urlGeo } from './api/apiUrls';
 
-const urlGeo = 'https://ipinfo.io/json?token=f9ba6cadb300c1';
 
 async function fetchAPI(url) {
 	console.log(url);
@@ -51,8 +44,9 @@ library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapM
 function App(props) {
 	const [units, setUnits] = useState(localStorageInit('units'));
 	const [openData, setOpenData] = useState({
-		city: 'Minsk',
-		country: 'Belarus',
+		city: null,
+		country: null,
+		countryTag: null,
 		main: null,
 		wind: 'none',
 		weather: null,
@@ -65,14 +59,9 @@ function App(props) {
 	const [forecast, setForecast] = useState(null);
 	const [error, setError] = useState(null);
 	const [mapUpdated, setMapUpdated] = useState({update: false});
-	const [background, setBackground] = useState(JSON.parse(localStorage.getItem('image')));
-	const backgroundStyle = background ? {
-		backgroundImage: 'url(' + background.urls.full +')',
-		backgroundSize: 'cover'
-	} : {
-		backgroundImage: 'url(' + defaultBackground +')',
-		backgroundSize: 'cover'
-	};
+	const [background, setBackground] = useState({
+		res: null, loaded: false, styles: {}
+	}); //JSON.parse(localStorage.getItem('image'))
 	const [animationOn, setAnimationOn] = useState(true);
 	const [menuOpened, setMenuOpened] = useState(false);
 	const [night, setNight] = useState(false);
@@ -81,55 +70,47 @@ function App(props) {
 	const changeLanguage = lng => {
 		i18n.changeLanguage(lng);
 	};
-
+	useEffect(() => {
+		updateBackground();
+	}, []);
 	useEffect(() => {     
-		if (userLocation === null) {
-			async function preLoad() {
-				const data = await fetchAPI(urlGeo);
-				if (!data) {
-					setUserLocation({lat: 0,lon: 0});
-					return null;
-				}
-				setOpenData((openData) => ({
-					...openData,
-					city: data.city
-				}));
-				const location = {
-					lat: parseFloat(data.loc.split(',')[0]),
-					lon: parseFloat(data.loc.split(',')[1])
-				};
-				setUserLocation(location);
-				setMapUpdated({update: true, lon: location.lon, lat: location.lat});
-				if (openData.weather === null) weatherGoTemp();
+		async function preLoad() {
+			const data = await fetchAPI(urlGeo);
+			if (!data) {
+				setUserLocation({lat: 0,lon: 0});
+				return null;
 			}
-			preLoad();
+			let country;
+			countries.forEach((countryT) => {
+				if (countryT.code === data.country) country = countryT.name;
+			});
+			setOpenData((openData) => ({
+				...openData,
+				city: data.city,
+				country: country,
+				countryTag: data.country
+			}));
+			const location = {
+				lat: parseFloat(data.loc.split(',')[0]),
+				lon: parseFloat(data.loc.split(',')[1])
+			};
+			setUserLocation(location);
+			setMapUpdated({update: true, lon: location.lon, lat: location.lat});
 		}
-		if (background === null) {
-			if (localStorage.getItem('image')) {
-				return;
-			}
-			const unsUrl = backgroundsURL();
-			async function preLoadImg() {
-				const data = await fetchAPI(unsUrl);
-				localStorage.setItem('image', JSON.stringify(data));
-				setBackground(data);
-			}
-			preLoadImg();
+		preLoad();
+	}, []);
+	useEffect(() => {
+		if (openData.city && openData.weather === null) {
+			console.log('x');
+			weatherMain();
 		}
-	}, [userLocation, openData.weather, background]);
+	}, [openData.city, openData.weather]);
 	// 
-	async function weatherGoTemp(targetCity) {
+	async function weatherMain(targetCity) {
 		const urlCity = !targetCity ? openData.city : targetCity;
 		const url = weatherURL(urlCity);
-		const weatherLS = localStorage.getItem('weather');
 		let data;
-		//
-		if (weatherLS) {
-			data = JSON.parse(weatherLS);
-		} else {
-			data = await fetchAPI(url);
-			localStorage.setItem('weather', JSON.stringify(data));
-		}
+		data = await fetchAPI(url);
 		//
 		if (data.status && data.status !== 200) {
 			// status: 404, statusText "Not Found"
@@ -142,9 +123,6 @@ function App(props) {
 		countries.forEach((countryT) => {
 			if (countryT.code === data.sys.country) country = countryT.name;
 		});
-		//1a72d9365e6b4965a0ac1704fb67223c
-		//https://api.opencagedata.com/geocode/v1/json?q=LAT+LNG&key=1a72d9365e6b4965a0ac1704fb67223c
-		//`https://api.opencagedata.com/geocode/v1/json?q=${data.coord.lat}+${data.coord.lon}&key=1a72d9365e6b4965a0ac1704fb67223c`
 		setOpenData({
 			city: data.name,
 			country: country,
@@ -162,15 +140,8 @@ function App(props) {
 
 	async function getForecast(pLat, pLon) {
 		const url = weather3daysURL(pLat, pLon);
-		const weatherLS = localStorage.getItem('weatherForecast');
 		let data;
-		//
-		if (weatherLS) {
-			data = JSON.parse(weatherLS);
-		} else {
-			data = await fetchAPI(url);
-			localStorage.setItem('weatherForecast', JSON.stringify(data));
-		}
+		data = await fetchAPI(url);
 		if (!data) {
 			return null;
 		}
@@ -184,7 +155,23 @@ function App(props) {
 		if (str === openData.city) return;
 		let searchCity = str.trim();
 		searchCity = searchCity.replace(' ', '+');
-		weatherGoTemp(searchCity);
+		weatherMain(searchCity);
+	}
+	function updateBackground() {
+		//|| localStorage.getItem('image') === null
+		const unsUrl = backgroundsURL();
+		
+		async function preLoadImg() {
+			const data = await fetchAPI(unsUrl);
+			//localStorage.setItem('image', JSON.stringify(data));
+			const res = data ? data.urls.full : defaultBackground;
+			const backgroundStyle = {
+				backgroundImage: 'url(' + res +')',
+				backgroundSize: 'cover'
+			};
+			setBackground({res: res, loaded: false, styles: backgroundStyle});
+		}
+		preLoadImg();
 	}
 	function mapUpdatedEnd() {
 		setMapUpdated({update: false});
@@ -205,12 +192,12 @@ function App(props) {
 	if (!userLocation) return <h2>Loading location...</h2>;
 	if (!openData.weather) return <h2>Loading weather...</h2>;
 	return (
-		<div className='app__container' style={backgroundStyle}>
+		<div className='app__container' style={background.loaded ? background.styles : {}}>
 			{night && <div className='bg__fog'></div>}
 			<header className='header'>
 				<div className='container'>
 					<div className='btn__container'>
-						<Button className='background__switch' icon={'sync-alt'} />
+						<Button className='background__switch' icon={'sync-alt'} onClick={updateBackground} />
 						<DropButton className='lang__switch' langChanger={(e) => changeLanguage(e)} />
 						<DoubleButton 
 							onClick={[() => setUnits('imperial'), () => setUnits('metric')]}
@@ -228,6 +215,7 @@ function App(props) {
 				<WeatherBox
 					city={openData.city}
 					country={openData.country}
+					countryTag={openData.countryTag}
 					main={openData.main}
 					wind={openData.wind}
 					weather={openData.weather ? openData.weather[0] : {}}
@@ -285,7 +273,12 @@ function App(props) {
 					onClick={() => setMapStyle(5)}
 				/>
 			</Menu>
-			
+			<img 
+				style={{visibility: 'hidden', position: 'absolute'}}
+				src={background.res ? background.res : defaultBackground}
+				onLoad={() => setBackground({...background, loaded: true})}
+				alt=''
+			/>
 		</div>
 	);
 

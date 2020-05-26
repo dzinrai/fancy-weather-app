@@ -35,7 +35,7 @@ function Map(props) {
 			}));
 			updateEnd();
 		}
-	}, [update, lon, lat]);
+	}, [update, lon, lat, updateEnd]);
 	function _onMarkerDragEnd(event){
 		console.log('lon',event.lngLat[0],'lat',event.lngLat[1]);
 		setMarker({
