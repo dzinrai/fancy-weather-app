@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './App.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -15,28 +15,14 @@ import ErrorLog from './components/ErrorLog';
 import '../node_modules/mapbox-gl/dist/mapbox-gl.css';
 import Map from './components/Map';
 import Menu from './components/Menu';
-import {light, dark, setTheme} from './components/theme.js';
+import {light, dark, setTheme} from './theme/theme.js';
 import DoubleButton from './components/DoubleButton';
 import countries from './countries';
-import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL, urlGeo, getLoc, translateAPI } from './api/apiUrls';
+import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL, urlGeo, translateAPI } from './api/apiUrls';
+import fetchAPI from './api/fetchAPI';
+import localStorageInit from './localStorage/localStorageInit';
 
 
-async function fetchAPI(url, nolog=false) {
-	if (!nolog) console.log(url);
-	const response = await fetch(url);
-	if (!nolog) console.log(response);
-	if (!response.ok) return response;
-	let data = await response.json();
-	if (!nolog) console.log(data);
-	return data;
-}
-function localStorageInit(item) {
-	const value = localStorage.getItem(item);
-	if (value) {
-		return value;
-	}
-	if (item === 'units') return 'metric';
-}
 library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
 	faMoonRegular, faCaretDown, faImages, faImagesRegular, faThermometerQuarter, faSun, faWind, faTint, faSatellite,
 	faStreetView);
@@ -128,25 +114,21 @@ function App(props) {
 		countries.forEach((countryT) => {
 			if (countryT.code === data.sys.country) country = countryT.name;
 		});
-		setOpenData({
+		setOpenData((openData) => ({
+			...openData,
 			city: data.name,
 			country: country,
 			main: data.main,
 			wind: data.wind,
 			weather: data.weather,
 			clouds: data.clouds
-		});
+		}));
 		setError(null);
 		setLat(data.coord.lat);
 		setLon(data.coord.lon);
 		getForecast(data.coord.lat, data.coord.lon);
 		setMapUpdated({update: true, lon: data.coord.lon, lat: data.coord.lat});
-		const info = await getCityInfo(data.name + ', ' + country);
-		/*setOpenData((openData) => ({
-			...openData,
-			city: info.city,
-			country: info.country,
-		}));*/
+		getCityInfo(data.name + ', ' + country);
 	}
 	async function getCityInfo(cityLine) {
 		const cityArray = {};
@@ -257,15 +239,7 @@ function App(props) {
 				<WeatherBox
 					openData={openData}
 					cityInfo={cityInfo ? cityInfo[i18n.language] : openData.city.concat(', ').concat(openData.country)}
-					country={openData.country}
-					countryTag={openData.countryTag}
-					main={openData.main}
-					wind={openData.wind}
-					weather={openData.weather ? openData.weather[0] : {}}
 					forecast={forecast !== null ? forecast : []}
-					timezone={openData.timezone}
-					dayTemp={openData.dayTemp}
-					nightTemp={openData.nightTemp}
 					units={units}
 				/>
 				<div className='map-side__container'>

@@ -15,8 +15,8 @@ function Clock(props) {
 
 	return (
 		<span>
-			{date.toLocaleTimeString(props.country, {
-				timeZone: props.timezone
+			{date.toLocaleTimeString(props.countryTag ? props.countryTag : 'BY', {
+				timeZone: props.timezone ? props.timezone : "Europe/Minsk"
 			}).split(' ').slice(0,-1).join('')}
 		</span>
 	);

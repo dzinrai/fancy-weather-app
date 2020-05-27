@@ -9,7 +9,7 @@ function Button(props) {
 	useEffect(() => {
 		if (props.animate) setAnimation(animClass);
 		else setAnimation('');
-	}, [props.animate]);
+	}, [props.animate, animClass]);
 
 	return (
 		<button 

@@ -7,11 +7,11 @@ import Clock from './Clock';
 function WeatherBox(props) {
 	const { t } = useTranslation();
 	const openData = props.openData;
-	const main = props.main;
+	const main = props.openData.main;
 	const temperature = main ? convertedUnits(main.temp) : '-';
 	const feels_like = main ? convertedUnits(main.feels_like) : '-';
-	const wind = props.wind;
-	const weather = props.weather;
+	const wind = props.openData.wind;
+	const weather = props.openData.weather;
 	const dayTemp = openData.dayTemp ? openData.dayTemp : 0;
 	const nightTemp = openData.nightTemp ? openData.nightTemp : 0;
 	const description = (weather && weather.description) ? weather.description : 'few clouds';
@@ -38,7 +38,7 @@ function WeatherBox(props) {
 	return (
 	<div className="weather__box">
 		<h2 className='city'>{props.cityInfo}</h2>
-		<span className='time'>{`${t(dayName)} ${day.getDate()} ${t(month)} `}</span><Clock countryTag={props.countryTag} timezone={props.timezone} />
+		<span className='time'>{`${t(dayName)} ${day.getDate()} ${t(month)} `}</span><Clock countryTag={props.openData.countryTag} timezone={props.openData.timezone} />
 		<div>
 			<div className='main__weather'>
 				<div className='left-box'>
@@ -53,7 +53,7 @@ function WeatherBox(props) {
 				<div className='right-box'>
 					<span>{t(description).toUpperCase()}</span>
 					<span>{t('FEELS LIKE').toUpperCase()}: {feels_like.toFixed(0) + '°'}</span>
-					<span data-tip data-for={'wind'+0}><FontAwesomeIcon icon='wind' size='1x' /> {wind ? wind.speed : '-'} m/s</span>
+					<span data-tip data-for={'wind'+0}><FontAwesomeIcon icon='wind' size='1x' /> {wind ? wind.speed.toFixed(0) : '-'} m/s</span>
 					<span data-tip data-for={'humidity'+0}><FontAwesomeIcon icon='tint' size='1x' /> {main ? main.humidity : '-'}%</span>
 				</div>
 			</div>
