@@ -241,6 +241,7 @@ function App(props) {
 					cityInfo={cityInfo ? cityInfo[i18n.language] : openData.city.concat(', ').concat(openData.country)}
 					forecast={forecast !== null ? forecast : []}
 					units={units}
+					animationOn={animationOn}
 				/>
 				<div className='map-side__container'>
 					<div className='mapbox__container'>

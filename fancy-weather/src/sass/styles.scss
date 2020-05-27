@@ -266,7 +266,7 @@ main {
         align-items: center;
         flex-wrap: wrap;
         width: 73%;
-        flex: 1 0 50%;
+        flex: 1 0 65%;
         svg {
             position: relative;
             top: 3px;
@@ -279,10 +279,12 @@ main {
     .right-box {
         display: flex;
         flex-wrap: wrap;
-        flex: 1 1 50%;
+        flex-direction: column;
+        align-content: flex-start;
+        flex: 0 0 40%;
         font-size: 20px;
-        span:nth-child(1) {
-            font-size: 16px;
+        .wind-humidity__container {
+            margin: 20px 0;
         }
         span:nth-child(1),
         span:nth-child(2) {
@@ -290,15 +292,14 @@ main {
         }
         span:nth-child(3),
         span:nth-child(4) {
-            align-self: flex-end;
             font-size: 28px;
         }
         span:last-child {
             margin: 0 0 0 20px;
         }
     }
-
 }
+
 .forecast__weather {
     display: flex;
     flex-direction: row;
@@ -318,13 +319,6 @@ main {
     width: 33%;
     span {
         overflow-wrap: break-word;
-    }
-    img {
-        position: absolute;
-        width: 70px;
-        height: 70px;
-        right: -10px;
-        top: -10px;
     }
     .forecast__line {
         display: flex;
@@ -353,21 +347,33 @@ main {
             margin: 0 0 4px 5px;
             font-size: 14px;
         }
+        svg {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            right: -10px;
+            top: -10px;
+        }
     }
 }
 .forecast__desc {
     height: 42px;
     max-height: 42px;
 }
+.night_temp, .day_temp {
+    display: flex;
+    align-items: flex-end;
+}
 .night_temp:hover {
     color: #fcfdb0;
-    background-color: var(--btnActive);
     border-radius: 5px;
     cursor: pointer;
+    svg {
+        color: #fff9c3;
+    }
 }
 .day_temp:hover {
     color: #fdd316;
-    background-color: var(--btnActive);
     border-radius: 5px;
     cursor: pointer;
 }
