@@ -9,6 +9,7 @@
     --borderColor: #02b1b1;
     --inputColor: #f6f6f6;
     --inputBack: rgba(76, 82, 85, 0.404);
+    --errorColor: #ff5c5c6c;
 }
 .rootDark {
     --themeColor: #14012d;
@@ -21,6 +22,7 @@
     --borderColor: #02b1b1;
     --inputColor: #eeecec;
     --inputBack: #111111;
+    --errorColor: #7202026c;
 }
 * {
     box-sizing: border-box;
@@ -212,6 +214,11 @@ button {
         border-top-right-radius: 5px;
     }
 }
+.search__container form .wrong__input {
+    border-color: var(--errorColor);
+    color: var(--inputColor);
+    background-color: var(--errorColor);
+}
 //
 main {
     display: flex;
@@ -237,6 +244,7 @@ main {
     border-radius: 5px;
     padding: 10px;
     color: #ffffff;
+    max-height: 468px;
     img {
         width: 100px;
         height: 100px;
@@ -512,6 +520,41 @@ main {
         animation: rotate .7s linear infinite;
     }
 }
+//
+.error__log {
+    position: absolute;
+    top: 0;
+    left: 40%;
+    width: 330px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    color: var(--btnColor);
+    .error-span {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 10px 12px;
+        border-radius: 5px;
+        width: 100%;
+        height: auto;
+        background-color: var(--errorColor);
+        font-size: 17px;
+        line-height: 21px;
+        transition: all .4s;
+        cursor: pointer;
+        .close__btn {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            font-size: 20px;
+        }
+    }
+    .error-span.anim {
+        animation: shake-scale .4s linear 1;
+    }
+}
+//
 .tooltip__target-box {
     position: absolute;
     display: block;
@@ -532,6 +575,33 @@ main {
     border-left-color: var(--btnActive) !important;
     border-left-style: solid !important;
     border-left-width: 6px !important;
+}
+.tooltip1.place-right::after {
+    border-right-color: var(--btnActive) !important;
+    border-right-style: solid !important;
+    border-right-width: 6px !important;
+}
+.tooltip1.place-bottom::after {
+    border-bottom-color: var(--btnActive) !important;
+    border-bottom-style: solid !important;
+    border-bottom-width: 6px !important;
+}
+@keyframes shake-scale {
+    0% {
+        transform: scale(100%);
+    }
+    25% {
+        transform: scale(80%);
+    }
+    50% {
+        transform: scale(100%);
+    }
+    75% {
+        transform: scale(80%);
+    }
+    100% {
+        transform: scale(100%);
+    }
 }
 @keyframes blob2 {
     0% {

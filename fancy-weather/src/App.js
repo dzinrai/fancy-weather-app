@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './App.css';
+import settings from './localStorage/localStorageInit';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSyncAlt, 
 	faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
-	faCaretDown, faImages, faThermometerQuarter, faSun, faWind, faTint, faSatellite, faStreetView } from '@fortawesome/free-solid-svg-icons';
+	faCaretDown, faImages, faThermometerQuarter, faSun, faWind, faTint, faSatellite, faStreetView,
+	faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faMoon as faMoonRegular,
 		 faImages as faImagesRegular  } from '@fortawesome/free-regular-svg-icons';
 import Button from './components/Button';
@@ -20,15 +22,16 @@ import DoubleButton from './components/DoubleButton';
 import countries from './countries';
 import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL, urlGeo, translateAPI } from './api/apiUrls';
 import fetchAPI from './api/fetchAPI';
-import localStorageInit from './localStorage/localStorageInit';
 
 
 library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
 	faMoonRegular, faCaretDown, faImages, faImagesRegular, faThermometerQuarter, faSun, faWind, faTint, faSatellite,
-	faStreetView);
+	faStreetView, faTimes);
+
 
 function App(props) {
-	const [units, setUnits] = useState(localStorageInit('units'));
+	const importSettings = settings ? settings : { units: "metric", night: false, animationOn: true };
+	const [units, setUnits] = useState(importSettings.units);
 	const [openData, setOpenData] = useState({
 		city: null,
 		country: null,
@@ -51,9 +54,9 @@ function App(props) {
 	const [preload, setPreload] = useState({
 		res: null, styles: {}, inProcess: true
 	});
-	const [animationOn, setAnimationOn] = useState(true);
+	const [animationOn, setAnimationOn] = useState(importSettings.animationOn);
 	const [menuOpened, setMenuOpened] = useState(false);
-	const [night, setNight] = useState(false);
+	const [night, setNight] = useState(importSettings.night);
 	const [mapStyle, setMapStyle] = useState(null);
 	const [query, setQuery] = useState([]);
 	const [cityInfo, setCityInfo] = useState(null);
@@ -172,7 +175,6 @@ function App(props) {
 			if (openData.weather[0].main === 'Clouds') bgQuery.push('clouds');
 			if (openData.weather[0].main === 'Rain') bgQuery.push('rain');
 		}
-		
 		const unsUrl = backgroundsURL(bgQuery.join());
 		
 		async function preLoadImg() {
@@ -195,7 +197,9 @@ function App(props) {
 		setMapUpdated({update: false});
 	}
 	function animationSwitch() {
-		setAnimationOn(!animationOn);
+		const animOn = !animationOn;
+		setAnimationOn(animOn);
+		localStorage.setItem('animationOn', animOn);
 	}
 	function openMenu() {
 		setMenuOpened(!menuOpened);
@@ -231,6 +235,7 @@ function App(props) {
 						text={t('Search city')}
 						btnText={t('Search')}
 						startSearch={startSearch}
+						error={error ? true : false}
 					/>
 				</div>
 				
@@ -262,7 +267,7 @@ function App(props) {
 				</div>
 				
 			</main>
-			<ErrorLog error={error} />
+			<ErrorLog error={error} clearErrors={() => setError(null)} />
 			<Menu 
 				opened={menuOpened} 
 				animationOn={animationOn} 

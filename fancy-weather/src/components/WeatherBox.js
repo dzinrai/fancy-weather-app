@@ -11,8 +11,8 @@ function WeatherBox(props) {
 	const { t } = useTranslation();
 	const openData = props.openData;
 	const main = props.openData.main;
-	const temperature = main ? convertedUnits(main.temp) : '-';
-	const feels_like = main ? convertedUnits(main.feels_like) : '-';
+	const temperature = main ? convertedUnits(main.temp) : 0;
+	const feels_like = main ? convertedUnits(main.feels_like) : 0;
 	const wind = props.openData.wind;
 	const weather = props.openData.weather[0];
 	const dayTemp = openData.dayTemp ? openData.dayTemp : 0;
@@ -53,7 +53,7 @@ function WeatherBox(props) {
 			<div className='main__weather'>
 				<div className='left-box'>
 					<FontAwesomeIcon icon='thermometer-quarter' />
-					<span data-tip data-for={'now'} className="average_temp">{ temperature.toFixed(0) + '°'}</span>
+					<span data-tip data-for={'now'} className="average_temp">{ (temperature ? temperature.toFixed(0) : '0') + '°'}</span>
 					<Icon id={getIcon(weather)} animate={props.animationOn} width='150' height='150' viewBox="6 10 50 50" />
 					<div className='during__temps'>
 						<span data-tip data-for={'dayTemp'+0} className="day_temp">
@@ -68,7 +68,7 @@ function WeatherBox(props) {
 				</div>
 				<div className='right-box'>
 					<span>{t(description).toUpperCase()}</span>
-					<span>{t('FEELS LIKE').toUpperCase()}: {feels_like.toFixed(0) + '°'}</span>
+					<span>{t('FEELS LIKE').toUpperCase()}: {(feels_like ? feels_like.toFixed(0) : '0') + '°'}</span>
 					<div className="wind-humidity__container">
 						<span data-tip data-for={'wind'+0}><FontAwesomeIcon icon='wind' size='1x' /> {wind ? wind.speed.toFixed(0) : '-'} m/s</span>
 						<span data-tip data-for={'humidity'+0}><FontAwesomeIcon icon='tint' size='1x' /> {main ? main.humidity : '-'}%</span>

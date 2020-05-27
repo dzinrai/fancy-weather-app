@@ -13,7 +13,7 @@ function Search(props) {
 		<div className='search__container'>
 			<form onSubmit={handleSubmit} className='search__form'>
 				<input 
-					className={props.classes} 
+					className={(props.error ? 'wrong__input' : '')} 
 					placeholder={props.text}
 					onChange={(e) => setSearch(e.target.value)}
 					value={search}
