@@ -1,7 +1,7 @@
 import defaultBg from '../img/defaultBg.jpg';
 
 const defaultBackground = defaultBg;
-const urlGeo = 'https://ipinfo.io/json?token=f9ba6cadb300c1';
+const urlGeo = 'https://fast-atoll-77681.herokuapp.com/https://ipinfo.io/json?token=f9ba6cadb300c1';
 const weatherApiKey = '8e204846034648c1fccc42fae990e7be';
 const cageData = '1a72d9365e6b4965a0ac1704fb67223c';
 const p = (str) => {
