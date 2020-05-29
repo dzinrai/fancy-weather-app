@@ -95,6 +95,13 @@
     "By day": "Днем",
     "At night": "Ночью",
     "Wind": "Ветер",
-    "Humidity": "Влажность"
+    "Humidity": "Влажность",
+    "meters per second":"метров в секунду",
 
+    "Voice search": "Голосовой поиск",
+    "Listen today's weather": "Прослушать сегодняшний прогноз",
+    "Browser doesn't support voice enter": "Браузер не поддерживает голосовой ввод",
+
+    "Unknown location": "Местоположение не известно",
+    "Something went wrong": "Что-то пошло не так..."
 }

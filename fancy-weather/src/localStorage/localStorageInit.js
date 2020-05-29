@@ -7,6 +7,7 @@ function localStorageInit() {
 	let units = localStorage.getItem('units');
 	let night = localStorage.getItem('night');
 	let animationOn = localStorage.getItem('animationOn');
+	let i18nextLng = localStorage.getItem('i18nextLng');
 	// defaults:
 	if (units === null) {
 		units = 'metric';
@@ -20,7 +21,12 @@ function localStorageInit() {
 		animationOn = true;
 		localStorage.setItem('animationOn', true);
 	}
-	const res = { units, night, animationOn };
+	if (i18nextLng === null || !(['en', 'by', 'ru'].includes(i18nextLng))) {
+		i18nextLng = 'en';
+		localStorage.setItem('i18nextLng', 'en');
+	}
+	
+	const res = { units, night, animationOn, i18nextLng };
 	[...Object.keys(res)].forEach((key) => {
 		res[key] = boolconvert(res[key]);
 	});

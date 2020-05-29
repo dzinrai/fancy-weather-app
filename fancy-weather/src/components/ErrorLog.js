@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useTranslation } from 'react-i18next';
 
 function ErrorLog(props) {
+	const { t } = useTranslation();
 	let error;
 	const [animate, setAnimate] = useState(true);
 
 	if (props.error) error = props.error.statusText;
-	if (error === 'Not Found') error = 'Данное местоположение не найдено';
-	else if (error) error = 'Что-то пошло явно не так...'; 
+	if (error === 'Not Found') error = t('Unknown location');
+	else if (error === "Browser doesn't support voice enter") error = t("Browser doesn't support voice enter");
+	else if (error) error = t('Something went wrong'); 
 	const scale = () => {
 		setAnimate(true);
 	};

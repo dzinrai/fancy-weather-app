@@ -95,5 +95,13 @@
     "By day": "Днём",
     "At night": "Ноччу",
     "Wind": "Вецер",
-    "Humidity": "Вільготнасць"
+    "Humidity": "Вільготнасць",
+    "meters per second":"метраў у секунду",
+
+    "Voice search": "Галасавы пошук",
+    "Listen today's weather": "Праслухаць сённяшні прагноз",
+    "Browser doesn't support voice enter": "Браузер не падтрымлівае галасавы ўвод",
+
+    "Unknown location": "Месцазнаходжанне невядомае",
+    "Something went wrong":"Нешта пашло не так..."
 }

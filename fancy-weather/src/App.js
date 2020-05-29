@@ -6,11 +6,12 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSyncAlt, 
 	faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
 	faCaretDown, faImages, faThermometerQuarter, faSun, faWind, faTint, faSatellite, faStreetView,
-	faTimes } from '@fortawesome/free-solid-svg-icons';
+	faTimes, faMicrophone, faMicrophoneSlash, faPlayCircle, faStopCircle } from '@fortawesome/free-solid-svg-icons';
 import { faMoon as faMoonRegular,
 		 faImages as faImagesRegular  } from '@fortawesome/free-regular-svg-icons';
 import Button from './components/Button';
 import Search from './components/Search';
+import SpeechSyn from './components/SpeechSyn';
 import DropButton from './components/DropButton';
 import WeatherBox from './components/WeatherBox';
 import ErrorLog from './components/ErrorLog';
@@ -26,7 +27,7 @@ import fetchAPI from './api/fetchAPI';
 
 library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
 	faMoonRegular, faCaretDown, faImages, faImagesRegular, faThermometerQuarter, faSun, faWind, faTint, faSatellite,
-	faStreetView, faTimes);
+	faStreetView, faTimes, faMicrophone, faMicrophoneSlash, faPlayCircle, faStopCircle);
 
 
 function App(props) {
@@ -135,7 +136,7 @@ function App(props) {
 	}
 	async function getCityInfo(cityLine) {
 		const cityArray = {};
-		const data1 = await fetchAPI(translateAPI(cityLine, null, 'en'), true);
+		const data1 = await fetchAPI(translateAPI(cityLine, null, 'en'), false);
 		cityArray.en =data1.text[0];
 		const data2 = await fetchAPI(translateAPI(cityLine, null, 'be'), true);
 		cityArray.by =data2.text[0];
@@ -211,8 +212,22 @@ function App(props) {
 		setTheme(nightM ? dark : light);
 		localStorage.setItem('night', nightM);
 	}
-	if (!userLocation) return <h2>Loading location...</h2>;
-	if (!openData.weather) return <h2>Loading weather...</h2>;
+	function handleError(newError) {
+		if (newError) setError(newError);
+		else {
+			setError({statusText: "Error"});
+		}
+	}
+	if (!userLocation) return (
+		<div className='app__container' style={background.loaded ? background.styles : {}}>
+			<h2>Loading location...</h2>
+		</div>
+	);
+	if (!openData.weather) return (
+		<div className='app__container' style={background.loaded ? background.styles : {}}>
+			<h2>Loading weather...</h2>
+		</div>
+	);
 	return (
 		<div className='app__container' style={background.loaded ? background.styles : {}}>
 			{night && <div className='bg__fog'></div>}
@@ -230,12 +245,19 @@ function App(props) {
 						<DoubleButton 
 							onClick={[() => setUnits('imperial'), () => setUnits('metric')]}
 							units={units} />
+						<SpeechSyn 
+							cityInfo={cityInfo ? cityInfo[i18n.language] : openData.city.concat(', ').concat(openData.country)}
+							openData={openData}
+							lang={i18n.language}
+							hide={true}
+						/>
 					</div>
 					<Search 
 						text={t('Search city')}
 						btnText={t('Search')}
 						startSearch={startSearch}
 						error={error ? true : false}
+						errorHandler={(newError) => handleError(newError)}
 					/>
 				</div>
 				

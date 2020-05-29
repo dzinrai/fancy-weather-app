@@ -95,5 +95,13 @@
     "By day": "By day",
     "At night": "At night",
     "Wind": "Wind",
-    "Humidity": "Humidity"
+    "Humidity": "Humidity",
+    "meters per second":"meters per second",
+
+    "Voice search": "Voice search",
+    "Listen today's weather": "Listen today's weather",
+    "Browser doesn't support voice enter": "Browser doesn't support voice enter",
+
+    "Unknown location": "Unknown location",
+    "Something went wrong": "Something went wrong..."
 }
