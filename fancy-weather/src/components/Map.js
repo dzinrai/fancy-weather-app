@@ -73,7 +73,11 @@ function Map(props) {
 				offsetTop={-35}
           		offsetLeft={-28}
 			>
-				<FontAwesomeIcon icon='map-marker-alt' className={'marker marker_user ' + animate} />
+				<div className={'marker__container ' + animate}>
+					<FontAwesomeIcon icon='map-marker-alt' className={'markerBack'} />
+					<FontAwesomeIcon icon='map-marker-alt' className={'markerBack2'} />
+					<FontAwesomeIcon icon='map-marker-alt' className={'marker marker_user'} />		
+				</div>		
 			</Marker>
 			<Marker
 				longitude={marker.longitude}
