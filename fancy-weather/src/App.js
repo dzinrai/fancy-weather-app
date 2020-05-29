@@ -6,7 +6,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSyncAlt, 
 	faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
 	faCaretDown, faImages, faThermometerQuarter, faSun, faWind, faTint, faSatellite, faStreetView,
-	faTimes, faMicrophone, faMicrophoneSlash, faPlayCircle, faStopCircle } from '@fortawesome/free-solid-svg-icons';
+	faTimes, faMicrophone, faMicrophoneSlash, faPlayCircle, faStopCircle, faDove } from '@fortawesome/free-solid-svg-icons';
 import { faMoon as faMoonRegular,
 		 faImages as faImagesRegular  } from '@fortawesome/free-regular-svg-icons';
 import Button from './components/Button';
@@ -23,14 +23,19 @@ import DoubleButton from './components/DoubleButton';
 import countries from './countries';
 import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL, urlGeo, translateAPI } from './api/apiUrls';
 import fetchAPI from './api/fetchAPI';
+import getDayTime from './assets/getDayTime.js';
+import getSeason from './assets/getMonth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 
 
 library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
 	faMoonRegular, faCaretDown, faImages, faImagesRegular, faThermometerQuarter, faSun, faWind, faTint, faSatellite,
-	faStreetView, faTimes, faMicrophone, faMicrophoneSlash, faPlayCircle, faStopCircle);
+	faStreetView, faTimes, faMicrophone, faMicrophoneSlash, faPlayCircle, faStopCircle, faDove);
 
 
 function App(props) {
+	const { t, i18n } = useTranslation();
 	const importSettings = settings ? settings : { units: "metric", night: false, animationOn: true };
 	const [units, setUnits] = useState(importSettings.units);
 	const [openData, setOpenData] = useState({
@@ -51,7 +56,7 @@ function App(props) {
 	const [mapUpdated, setMapUpdated] = useState({update: false});
 	const [background, setBackground] = useState({
 		res: null, loaded: false, styles: {}
-	}); //JSON.parse(localStorage.getItem('image'))
+	}); 
 	const [preload, setPreload] = useState({
 		res: null, styles: {}, inProcess: true
 	});
@@ -59,16 +64,17 @@ function App(props) {
 	const [menuOpened, setMenuOpened] = useState(false);
 	const [night, setNight] = useState(importSettings.night);
 	const [mapStyle, setMapStyle] = useState(null);
-	const [query, setQuery] = useState([]);
 	const [cityInfo, setCityInfo] = useState(null);
-	const { t, i18n } = useTranslation();
+	const [dataUpdate, setDataUpdate] = useState({});
 	const changeLanguage = lng => {
 		i18n.changeLanguage(lng);
 	};
 	useEffect(() => {
 		if (openData.weather !== null) updateBackground();
+		// eslint-disable-next-line
 	}, [openData.weather]);
-	useEffect(() => {     
+	useEffect(() => {    
+		i18n.changeLanguage(importSettings.i18nextLng);
 		async function preLoad() {
 			const data = await fetchAPI(urlGeo);
 			if (!data) {
@@ -93,14 +99,14 @@ function App(props) {
 			setMapUpdated({update: true, lon: location.lon, lat: location.lat});
 		}
 		preLoad();
+		// eslint-disable-next-line
 	}, []);
 	useEffect(() => {
 		if (openData.city && openData.weather === null) {
-			console.log('x');
 			weatherMain();
 		}
-	}, [openData.city]);
-	// 
+	}, [openData.city, openData.weather]);
+
 	async function weatherMain(targetCity) {
 		const urlCity = !targetCity ? openData.city : targetCity;
 		const url = weatherURL(urlCity);
@@ -118,6 +124,10 @@ function App(props) {
 		countries.forEach((countryT) => {
 			if (countryT.code === data.sys.country) country = countryT.name;
 		});
+		/*setDataUpdate((dataUpdate) => ({
+			...dataUpdate,
+			dataWeather: data
+		}));*/
 		setOpenData((openData) => ({
 			...openData,
 			city: data.name,
@@ -160,6 +170,9 @@ function App(props) {
 			nightTemp: data.daily[0].feels_like.night,
 		}));
 	}
+	function updateAll() {
+
+	}
 	function startSearch(str) {
 		if (str === openData.city) return;
 		let searchCity = str.trim();
@@ -167,32 +180,34 @@ function App(props) {
 		weatherMain(searchCity);
 	}
 	function updateBackground() {
-		//|| localStorage.getItem('image') === null
-		setPreload({inProcess: true});
-		let bgQuery = [...query];
+		let bgQuery = ['nature'];
 		if (openData.weather) {
-			console.log(openData.weather[0].main, bgQuery);
 			if (openData.weather[0].main === 'Snow') bgQuery.push('snow');
 			if (openData.weather[0].main === 'Clouds') bgQuery.push('clouds');
 			if (openData.weather[0].main === 'Rain') bgQuery.push('rain');
 		}
+		const timeData = getDayTime(openData.countryTag, openData.timezone);
+		bgQuery.push(timeData);
+		const season = getSeason();
+		bgQuery.push(season);
 		const unsUrl = backgroundsURL(bgQuery.join());
-		
+		console.log('backgrounds tags ' + bgQuery);
+
 		async function preLoadImg() {
 			let data;
 			//data = await fetchAPI(unsUrl);
 			const res = data ? data.urls.full : defaultBackground;
 			const backgroundStyle = {
 				backgroundImage: 'url(' + res +')',
-				backgroundSize: 'cover'
+				backgroundSize: 'cover',
+				transition: 'background-image .7s'
 			};
-			setPreload({inProcess: true, res: res, styles: backgroundStyle});
+			setPreload({res: res, styles: backgroundStyle});
 		}
 		preLoadImg();
 	}
 	function finishLoad() {
 		setBackground({res: preload.res, styles: preload.styles, loaded: true});
-		setPreload({...preload, inProcess: false});
 	}
 	function mapUpdatedEnd() {
 		setMapUpdated({update: false});
@@ -219,17 +234,19 @@ function App(props) {
 		}
 	}
 	if (!userLocation) return (
-		<div className='app__container' style={background.loaded ? background.styles : {}}>
-			<h2>Loading location...</h2>
+		<div className='app__container load__loc'>
+			<FontAwesomeIcon icon='dove' />
+			<h2>{t('Loading location')}</h2>
 		</div>
 	);
 	if (!openData.weather) return (
-		<div className='app__container' style={background.loaded ? background.styles : {}}>
-			<h2>Loading weather...</h2>
+		<div className='app__container load__weather'>
+			<FontAwesomeIcon icon='dove' />
+			<h2>{t('Loading weather')}</h2>
 		</div>
 	);
 	return (
-		<div className='app__container' style={background.loaded ? background.styles : {}}>
+		<div className='app__container' style={background.styles}>
 			{night && <div className='bg__fog'></div>}
 			<header className='header'>
 				<div className='container'>
@@ -238,7 +255,7 @@ function App(props) {
 							className='background__switch' 
 							icon={'sync-alt'} 
 							onClick={updateBackground}
-							animate={preload.inProcess}
+							animate={background.res !== preload.res}
 							animClass={'fa-spin'}
 						/>
 						<DropButton className='lang__switch' langChanger={(e) => changeLanguage(e)} />

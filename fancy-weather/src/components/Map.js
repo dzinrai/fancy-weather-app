@@ -18,10 +18,6 @@ function Map(props) {
 		bearing: 0,
         pitch: 0
 	});
-	const [marker, setMarker] = useState({
-		latitude: 53.54,
-		longitude: 27.34
-	});
 	const update = props.mapUpdated.update;
 	const updateEnd = props.updateEnd;
 	const lon = props.mapUpdated.lon;
@@ -36,13 +32,6 @@ function Map(props) {
 			updateEnd();
 		}
 	}, [update, lon, lat, updateEnd]);
-	function _onMarkerDragEnd(event){
-		console.log('lon',event.lngLat[0],'lat',event.lngLat[1]);
-		setMarker({
-			longitude: event.lngLat[0],
-			latitude: event.lngLat[1]
-		});
-	};
 	function updateControl(view) {
 		setViewport(view);
 	}
@@ -78,16 +67,6 @@ function Map(props) {
 					<FontAwesomeIcon icon='map-marker-alt' className={'markerBack2'} />
 					<FontAwesomeIcon icon='map-marker-alt' className={'marker marker_user'} />		
 				</div>		
-			</Marker>
-			<Marker
-				longitude={marker.longitude}
-				latitude={marker.latitude}
-				offsetTop={-35}
-          		offsetLeft={-28}
-				onDragEnd={_onMarkerDragEnd}
-				draggable
-			>
-				<FontAwesomeIcon icon='map-marker-alt' className='marker' />
 			</Marker>
 			<div className='controls__navigation'>
 				<NavigationControl onViewportChange={(viewport) => updateControl(viewport)} />

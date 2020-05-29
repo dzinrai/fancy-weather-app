@@ -2,7 +2,7 @@
     --themeColor: #720404;
     --stageColor: #ffffff;
     --offStageColor: #d10330;
-    --activeColor: #00f5f5;
+    --activeColor: #04b4b4;
     --btnBack: #86858594;
     --btnColor: #fbfbfb;
     --btnShadow: #000000;
@@ -16,7 +16,7 @@
     --themeColor: #14012d;
     --stageColor: #272627;
     --offStageColor: #d10330;
-    --activeColor: #00f5f5;
+    --activeColor: #04b4b4;
     --btnBack: #00000094;
     --btnColor: #ffffff;
     --btnShadow: #00000062;
@@ -50,6 +50,18 @@ button {
     overflow: hidden;
     background: rgb(255,255,251);
     background: radial-gradient(circle, rgba(255,255,251,1) 0%, rgba(148,187,233,1) 100%);
+    transition: background .7s;
+}
+.load__loc,
+.load__weather {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    svg {
+        font-size: 60px;
+        animation: blob2 3s linear infinite;
+        color: var(--activeColor);
+    }
 }
 .app__container > * {
     z-index: 1;
@@ -194,6 +206,7 @@ button {
         flex-direction: row;
         flex-wrap: nowrap;
         width: 100%;
+        position: relative;
     }
     input {
         padding: 0 10px;
@@ -231,6 +244,9 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: absolute;
+    right: 84px;
+    background-color: transparent;
     .active {
         animation: pulsar 2s linear infinite;
         color: var(--offStageColor);
@@ -474,7 +490,7 @@ main {
 .marker_user {
     position: relative;
     font-size: 50px;
-    color: #02b1b1;
+    color: var(--activeColor);
 }
 .marker__container.animation_allowed {
     animation: blob2 2s linear infinite;

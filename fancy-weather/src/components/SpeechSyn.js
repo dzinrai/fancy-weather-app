@@ -10,7 +10,6 @@ const whatDay = ["Sunday", "Monday","Tuesday","Wednesday","Thursday","Friday","S
 function getAvailableVoice(lng) {
     const synth = window.speechSynthesis;
     const voices = synth.getVoices();
-    console.log(voices);
     let ruVoice;
     let enVoice;
     for (let i = 0; i < voices.length; i += 1) {
@@ -25,7 +24,6 @@ function getAvailableVoice(lng) {
             break;
         }
     }
-    console.log(ruVoice, enVoice);
     if (lng === 'en') return enVoice;
     else return ruVoice;
 }
@@ -44,6 +42,7 @@ function SpeechSyn(props) {
     };
     useEffect(() => {
         changedLang();
+        // eslint-disable-next-line
     }, [enVoice, ruVoice]);
     useEffect(() => {
         cancel();
@@ -58,10 +57,12 @@ function SpeechSyn(props) {
         text = text.concat(`${props.openData.wind.speed.toFixed(0)} ${t('meters per second')}. `);
         text = text.concat(`${t('Humidity')} ${props.openData.main.humidity.toFixed(0)}%`);
         setValue(text);
+        // eslint-disable-next-line
     }, [props.openData, props.lang]);
     useEffect(() => {
         cancel();
         changedLang();
+        // eslint-disable-next-line
     }, [props.lang]);
 
     const speakWeather = () => {

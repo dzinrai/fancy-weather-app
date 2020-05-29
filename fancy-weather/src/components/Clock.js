@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import getLocaleTime from '../assets/getLocaleDate';
 
 function Clock(props) {
 	const [date, setDate] = useState(new Date());
@@ -15,9 +16,7 @@ function Clock(props) {
 
 	return (
 		<span>
-			{date.toLocaleTimeString(props.countryTag ? props.countryTag : 'BY', {
-				timeZone: props.timezone ? props.timezone : "Europe/Minsk"
-			}).split(' ').slice(0,-1).join('')}
+			{getLocaleTime(props.countryTag, props.timezone, date)}
 		</span>
 	);
 

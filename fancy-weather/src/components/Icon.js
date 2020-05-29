@@ -33,7 +33,6 @@ import {ReactComponent as Thunder} from '../img/static/thunder.svg';
 import '../sass/iconAnim.css';
 
 function Icon(props) { 
-    let icon;
     const id = props.id;
     const width = props.width;
     const height = props.height;

@@ -1,4 +1,4 @@
-import React, { useState, Children, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSpeechRecognition } from "react-speech-kit";
 import Button from './Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,8 +18,8 @@ function Search(props) {
 	});
 	useEffect(() => {
 		stop();
+		// eslint-disable-next-line
 	},[search]);
-	console.log(supported);
 	const startListening = (event) => {
 		if (!supported && props.errorHandler) props.errorHandler({statusText: "Browser doesn't support voice enter"});
 		if (!supported) return null;
