@@ -15,7 +15,7 @@ function Clock(props) {
 	}
 
 	return (
-		<span>
+		<span className="time">
 			{getLocaleTime(props.countryTag, props.timezone, date)}
 		</span>
 	);

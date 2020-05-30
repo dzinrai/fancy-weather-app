@@ -9,6 +9,7 @@ import {ReactComponent as Night} from '../img/static/night.svg';
 
 function WeatherBox(props) {
 	const { t } = useTranslation();
+	const city = typeof props.cityInfo === 'string' ? props.cityInfo : '-';
 	const openData = props.openData;
 	const main = props.openData.main;
 	const temperature = main ? convertedUnits(main.temp) : 0;
@@ -47,7 +48,7 @@ function WeatherBox(props) {
 	//<img src={`http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`} alt={t(day.weather[0].description)} />
 	return (
 	<div className="weather__box">
-		<h2 className='city'>{props.cityInfo}</h2>
+		<h2 className='city'>{city.toUpperCase()}</h2>
 		<span className='time'>{`${t(dayName)} ${day.getDate()} ${t(month)} `}</span><Clock countryTag={props.openData.countryTag} timezone={props.openData.timezone} />
 		<div>
 			<div className='main__weather'>
@@ -70,7 +71,7 @@ function WeatherBox(props) {
 					<span>{t(description).toUpperCase()}</span>
 					<span>{t('FEELS LIKE').toUpperCase()}: {(feels_like ? feels_like.toFixed(0) : '0') + '°'}</span>
 					<div className="wind-humidity__container">
-						<span data-tip data-for={'wind'+0}><FontAwesomeIcon icon='wind' size='1x' /> {wind ? wind.speed.toFixed(0) : '-'} m/s</span>
+						<span data-tip data-for={'wind'+0}><FontAwesomeIcon icon='wind' size='1x' /> {wind ? wind.speed.toFixed(0) : '-'} {t('m/s')}</span>
 						<span data-tip data-for={'humidity'+0}><FontAwesomeIcon icon='tint' size='1x' /> {main ? main.humidity : '-'}%</span>
 					</div>
 				</div>
@@ -82,38 +83,36 @@ function WeatherBox(props) {
 					<div className="forecast__head">
 						<span className="forecast__day">{ t(whatDay[(ddd[i]).getDay()])}</span>
 						<span className="forecast__desc">{t(day.weather[0].description)}</span>
-						<Icon id={getIcon(day.weather[0])} animate={props.animationOn} width='70' height='70' />
+						<Icon id={getIcon(day.weather[0])} animate={props.animationOn} />
 					</div>	
 					<div className="forecast__line">
 						<span data-tip data-for={'dayTemp'+i} className="day_temp">
 							<FontAwesomeIcon icon='sun' /> 
-							{convertedUnits(day.feels_like.day).toFixed(0)+ '°'}
+							{convertedUnits(day.temp.day).toFixed(0)+ '°'}
 							<ReactTooltip id={'dayTemp'+i} type='error' className='tooltip1'>
 								<span>{t('By day')}</span>
 							</ReactTooltip>
 						</span>
 						<span data-tip data-for={'wind'+i} className="wind_f">							
-							{day.wind_speed.toFixed(0)}
+							{day.wind_speed.toFixed(0) + ' ' + t('m/s')}
 							<ReactTooltip id={'wind'+i} type='error' className='tooltip1'>
 								<span>{t('Wind')}</span>
 							</ReactTooltip>
-							<FontAwesomeIcon icon='wind' />
 						</span>
 					</div>
 					<div className="forecast__line">
 						<span data-tip data-for={'nightTemp'+i} className="night_temp">
 							<FontAwesomeIcon icon='moon' /> 
-							{convertedUnits(day.feels_like.night).toFixed(0)+ '°'}
+							{convertedUnits(day.temp.night).toFixed(0)+ '°'}
 							<ReactTooltip id={'nightTemp'+i} type='error' className='tooltip1'>
 								<span>{t('At night')}</span>
 							</ReactTooltip>
 						</span>
 						<span data-tip data-for={'humidity'+i} className="humidity_f">							
-							{day.humidity}
+							{day.humidity + ' %'}
 							<ReactTooltip id={'humidity'+i} type='error' className='tooltip1'>
 								<span>{t('Humidity')}</span>
 							</ReactTooltip>
-							<FontAwesomeIcon icon='tint' />
 						</span>
 					</div>
 				</div>

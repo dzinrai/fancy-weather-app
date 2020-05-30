@@ -10,6 +10,7 @@ function ErrorLog(props) {
 	if (props.error) error = props.error.statusText;
 	if (error === 'Not Found') error = t('Unknown location');
 	else if (error === "Browser doesn't support voice enter") error = t("Browser doesn't support voice enter");
+	else if (error === "Forbidden") error = t('Background change is not yet available'); 
 	else if (error) error = t('Something went wrong'); 
 	const scale = () => {
 		setAnimate(true);

@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiYWxleG1hbGtvdiIsImEiOiJja2FjaDU5bWUxZ2x6MnNtazdkMWx1MzZiIn0.T9U5tfEljgOS3bBS17wpKA';
 
 function Map(props) {
-	const width = 270;
+	const width = 264;
 	const height = 456;
 	const animate = props.animate ? 'animation_allowed' : '';
 	const [viewport, setViewport] = useState({
