@@ -4,6 +4,7 @@
     "Search": "Search",
     "Search city": "Search city",
     "FEELS LIKE": "FEELS LIKE",
+    "m/s": "m/s",
 
     "Sunday":"Sunday",
     "Monday":"Monday",
@@ -105,5 +106,6 @@
     "Browser doesn't support voice enter": "Browser doesn't support voice enter",
 
     "Unknown location": "Unknown location",
-    "Something went wrong": "Something went wrong..."
+    "Something went wrong": "Something went wrong...",
+    "Background change is not yet available": "Background change is not yet available"
 }

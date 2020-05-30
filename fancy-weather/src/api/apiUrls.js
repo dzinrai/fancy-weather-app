@@ -1,9 +1,11 @@
 import defaultBg from '../img/defaultBg.jpg';
 
 const defaultBackground = defaultBg;
-const urlGeo = 'https://fast-atoll-77681.herokuapp.com/https://ipinfo.io/json?token=f9ba6cadb300c1';
+const proxy = 'https://fast-atoll-77681.herokuapp.com/';
+const urlGeo = proxy + 'https://ipinfo.io/json?token=f9ba6cadb300c1';
 const weatherApiKey = '8e204846034648c1fccc42fae990e7be';
 const cageData = '1a72d9365e6b4965a0ac1704fb67223c';
+const flickr = '8d4697319c704b6ecf246ef8d416032f';
 const p = (str) => {
     const newStr = str.trim().replace(' ', '');
     return newStr;
@@ -14,9 +16,10 @@ const weatherURL = (city) => {
 const weather3daysURL = (pLat, pLon) => {
     return `https://api.openweathermap.org/data/2.5/onecall?lat=${pLat}&lon=${pLon}&exclude=minutely,hourly&units=metric&appid=${weatherApiKey}`;
 };
-const backgroundsURL = (themes) => {
+const backgroundsURL = (themes, page=1) => {
     const query = 'nature'.concat(themes ? ','.concat(themes) : '');
-    return `https://api.unsplash.com/photos/random?orientation=landscape&per_page=10&query=${query}&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek`;		
+    //return `https://api.unsplash.com/photos/random?orientation=landscape&per_page=10&query=${query}&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek`;		
+    return proxy + `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${flickr}&tags=${query}&tag_mode=all&extras=url_h&page=${page}&format=json&nojsoncallback=1`;
 };
 const getLoc = (placeName,lang='en') => {
     return `https://api.opencagedata.com/geocode/v1/json?q=${p(placeName)}&key=${cageData}&language=${lang}&pretty=1`;

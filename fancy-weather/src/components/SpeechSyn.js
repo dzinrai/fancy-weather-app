@@ -31,6 +31,7 @@ function getAvailableVoice(lng) {
 function SpeechSyn(props) {
     const { t } = useTranslation();
     const day = new Date();
+    const cityInfo = typeof props.cityInfo === 'string' ? props.cityInfo.split(',')[0] : '';
     const [value, setValue] = useState("");
     const [ruVoice, setRuVoice] = useState(null);
     const [enVoice, setEnVoice] = useState(null);
@@ -49,7 +50,7 @@ function SpeechSyn(props) {
         if (!ruVoice) setRuVoice(getAvailableVoice('ru'));
         if (!enVoice) setEnVoice(getAvailableVoice('en'));
         let text = '';
-        text = text.concat(`${props.cityInfo ? props.cityInfo.split(',')[0] : ''}. `);
+        text = text.concat(`${cityInfo}. `);
         text = text.concat(`${t(whatDay[day.getDay()])}. `);
         text = text.concat(`${props.openData.main.temp.toFixed(0)}°. `);
         text = text.concat(`${t(props.openData.weather[0].description)}. ${t('FEELS LIKE')} `);

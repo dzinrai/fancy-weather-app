@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import './App.css';
 import settings from './localStorage/localStorageInit';
@@ -24,7 +24,8 @@ import countries from './countries';
 import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL, urlGeo, translateAPI } from './api/apiUrls';
 import fetchAPI from './api/fetchAPI';
 import getDayTime from './assets/getDayTime.js';
-import getSeason from './assets/getMonth';
+import getSeason from './assets/getSeason';
+import shuffleArray from './assets/shuffleArray';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
@@ -53,10 +54,12 @@ function App(props) {
 	const [lon, setLon] = useState(null);
 	const [forecast, setForecast] = useState(null);
 	const [error, setError] = useState(null);
+	const [errorBg, setErrorBg] = useState(null);
 	const [mapUpdated, setMapUpdated] = useState({update: false});
 	const [background, setBackground] = useState({
 		res: null, loaded: false, styles: {}
 	}); 
+	const [bgEnter, setBgEnter] = useState(false);
 	const [preload, setPreload] = useState({
 		res: null, styles: {}, inProcess: true
 	});
@@ -66,13 +69,10 @@ function App(props) {
 	const [mapStyle, setMapStyle] = useState(null);
 	const [cityInfo, setCityInfo] = useState(null);
 	const [dataUpdate, setDataUpdate] = useState({});
+	const parentRef = useRef(null);
 	const changeLanguage = lng => {
 		i18n.changeLanguage(lng);
 	};
-	useEffect(() => {
-		if (openData.weather !== null) updateBackground();
-		// eslint-disable-next-line
-	}, [openData.weather]);
 	useEffect(() => {    
 		i18n.changeLanguage(importSettings.i18nextLng);
 		async function preLoad() {
@@ -105,7 +105,21 @@ function App(props) {
 		if (openData.city && openData.weather === null) {
 			weatherMain();
 		}
+		// eslint-disable-next-line
 	}, [openData.city, openData.weather]);
+	useEffect(() => {
+		if (openData.weather !== null) updateBackground();
+		// eslint-disable-next-line
+	}, [openData.weather]);
+	useEffect(() => {
+		if (dataUpdate.dataWeatherMain && dataUpdate.dataCityInfo && dataUpdate.dataForecast) {
+			const dataWeatherMain = {...dataUpdate.dataWeatherMain};
+			const dataCityInfo = {...dataUpdate.dataCityInfo};
+			const dataForecast = {...dataUpdate.dataForecast};
+			updateAll([dataWeatherMain, dataCityInfo, dataForecast]);
+			setDataUpdate({});
+		}
+	}, [dataUpdate]);
 
 	async function weatherMain(targetCity) {
 		const urlCity = !targetCity ? openData.city : targetCity;
@@ -115,23 +129,58 @@ function App(props) {
 		//
 		if (data.status && data.status !== 200) {
 			// status: 404, statusText "Not Found"
-			if (openData.weather) {
-				setError(data);
-			}
+			setError(data);
+			setErrorBg(null);
 			return null;
 		}
-		let country;
 		countries.forEach((countryT) => {
-			if (countryT.code === data.sys.country) country = countryT.name;
+			if (countryT.code === data.sys.country) data.countryForLine = countryT.name;
 		});
-		/*setDataUpdate((dataUpdate) => ({
+		setDataUpdate((dataUpdate) => ({
 			...dataUpdate,
-			dataWeather: data
-		}));*/
+			dataWeatherMain: data
+		}));
+		getForecast(data.coord.lat, data.coord.lon);
+		getCityInfo(data.name + ', ' + data.countryForLine);
+	}
+	async function getCityInfo(cityLine) {
+		// translate city and country name on 3 languages
+		const cityArray = {};
+		const data1 = await fetchAPI(translateAPI(cityLine, null, 'en'), false);
+		cityArray.en =data1.text[0];
+		const data2 = await fetchAPI(translateAPI(cityLine, null, 'be'), true);
+		cityArray.by =data2.text[0];
+		const data3 = await fetchAPI(translateAPI(cityLine, null, 'ru'), true);
+		cityArray.ru =data3.text[0];
+		console.log(cityArray);
+		setDataUpdate((dataUpdate) => ({
+			...dataUpdate,
+			dataCityInfo: cityArray
+		}));
+	}
+	async function getForecast(pLat, pLon) {
+		// weather for 3 days
+		const url = weather3daysURL(pLat, pLon);
+		let data;
+		data = await fetchAPI(url);
+		if (data.status && data.status !== 200) {
+			// status: 404, statusText "Not Found"
+			setError(data);
+			setErrorBg(null);
+			return null;
+		}
+		setDataUpdate((dataUpdate) => ({
+			...dataUpdate,
+			dataForecast: data
+		}));
+	}
+	function updateAll(dataArray) {
+		// dataWeatherMain
+		const data = dataArray[0];
 		setOpenData((openData) => ({
 			...openData,
 			city: data.name,
-			country: country,
+			country: data.countryForLine,
 			main: data.main,
 			wind: data.wind,
 			weather: data.weather,
@@ -140,38 +189,19 @@ function App(props) {
 		setError(null);
 		setLat(data.coord.lat);
 		setLon(data.coord.lon);
-		getForecast(data.coord.lat, data.coord.lon);
 		setMapUpdated({update: true, lon: data.coord.lon, lat: data.coord.lat});
-		getCityInfo(data.name + ', ' + country);
-	}
-	async function getCityInfo(cityLine) {
-		const cityArray = {};
-		const data1 = await fetchAPI(translateAPI(cityLine, null, 'en'), false);
-		cityArray.en =data1.text[0];
-		const data2 = await fetchAPI(translateAPI(cityLine, null, 'be'), true);
-		cityArray.by =data2.text[0];
-		const data3 = await fetchAPI(translateAPI(cityLine, null, 'ru'), true);
-		cityArray.ru =data3.text[0];
-		setCityInfo(cityArray);
-	}
-
-	async function getForecast(pLat, pLon) {
-		const url = weather3daysURL(pLat, pLon);
-		let data;
-		data = await fetchAPI(url);
-		if (!data) {
-			return null;
-		}
-		setForecast(data.daily.slice(1,4));
+		// dataCityInfo
+		const data2 = dataArray[1];
+		setCityInfo(data2);
+		// dataForecast
+		const data3 = dataArray[2];
+		setForecast(data3.daily.slice(1,4));
 		setOpenData((openData) => ({
 			...openData,
-			timezone: data.timezone,
-			dayTemp: data.daily[0].feels_like.day,
-			nightTemp: data.daily[0].feels_like.night,
+			timezone: data3.timezone,
+			dayTemp: data3.daily[0].temp.day,
+			nightTemp: data3.daily[0].temp.night,
 		}));
-	}
-	function updateAll() {
-
 	}
 	function startSearch(str) {
 		if (str === openData.city) return;
@@ -188,26 +218,43 @@ function App(props) {
 		}
 		const timeData = getDayTime(openData.countryTag, openData.timezone);
 		bgQuery.push(timeData);
-		const season = getSeason();
+		const season = getSeason(lat ? lat : userLocation.lat);
 		bgQuery.push(season);
 		const unsUrl = backgroundsURL(bgQuery.join());
 		console.log('backgrounds tags ' + bgQuery);
 
 		async function preLoadImg() {
 			let data;
-			//data = await fetchAPI(unsUrl);
-			const res = data ? data.urls.full : defaultBackground;
+			let res = defaultBackground;
+			data = await fetchAPI(unsUrl);
+			if (data && data.status && data.status !== 200) {
+				// status: 403, statusText "Forbidden"
+				setError(null);
+				setErrorBg({statusText: "Forbidden"});
+			} else if (data && data.photos && data.photos.photo) {
+				const arr = shuffleArray([...data.photos.photo]);
+				for (let i = 0; i < arr.length; i++) {
+					if (arr[i].height_h > 500 && arr[i].url_h) {
+						res = arr[i].url_h;
+						break;
+					}
+				}
+			}
 			const backgroundStyle = {
 				backgroundImage: 'url(' + res +')',
-				backgroundSize: 'cover',
-				transition: 'background-image .7s'
+				backgroundSize: 'cover'
 			};
 			setPreload({res: res, styles: backgroundStyle});
 		}
 		preLoadImg();
 	}
-	function finishLoad() {
-		setBackground({res: preload.res, styles: preload.styles, loaded: true});
+	function finishLoad(e) {
+		const bg = {res: preload.res, styles: preload.styles, loaded: true};
+		setBgEnter(true);
+		setBackground(bg);
+		setTimeout(() => {
+			setBgEnter(false);
+		}, 1000);
 	}
 	function mapUpdatedEnd() {
 		setMapUpdated({update: false});
@@ -246,8 +293,9 @@ function App(props) {
 		</div>
 	);
 	return (
-		<div className='app__container' style={background.styles}>
+		<div className='app__container' style={background.styles} ref={ parentRef }>
 			{night && <div className='bg__fog'></div>}
+			{bgEnter && <div className='bg__enter' style={{...background.styles, height: parentRef.current.offsetHeight}}></div>}
 			<header className='header'>
 				<div className='container'>
 					<div className='btn__container'>
@@ -276,8 +324,7 @@ function App(props) {
 						error={error ? true : false}
 						errorHandler={(newError) => handleError(newError)}
 					/>
-				</div>
-				
+				</div>				
 			</header>
 			<main className='main'>
 				<WeatherBox
@@ -304,9 +351,9 @@ function App(props) {
 						<span>Longitude: {lon ? lon.toFixed(2) : '0'}</span>
 					</div>
 				</div>
-				
 			</main>
 			<ErrorLog error={error} clearErrors={() => setError(null)} />
+			<ErrorLog error={errorBg} clearErrors={() => setErrorBg(null)} />
 			<Menu 
 				opened={menuOpened} 
 				animationOn={animationOn} 
@@ -315,8 +362,8 @@ function App(props) {
 			/>
 			<img 
 				style={{visibility: 'hidden', position: 'absolute'}}
-				src={preload.res ? preload.res : defaultBackground}
-				onLoad={finishLoad}
+				src={preload.res}
+				onLoad={(e) => finishLoad(e)}
 				alt=''
 			/>
 		</div>

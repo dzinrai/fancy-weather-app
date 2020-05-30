@@ -4,6 +4,7 @@
     "Search": "Пошук",
     "Search city": "Пошук горада",
     "FEELS LIKE": "адчуваецца",
+    "m/s": "м/с",
 
     "Sunday":"Нядзеля",
     "Monday":"Панядзелак",
@@ -105,5 +106,7 @@
     "Browser doesn't support voice enter": "Браузер не падтрымлівае галасавы ўвод",
 
     "Unknown location": "Месцазнаходжанне невядомае",
-    "Something went wrong":"Нешта пашло не так..."
+    "Something went wrong":"Нешта пашло не так...",
+
+    "Background change is not yet available": "Змена фону пакуль недаступная"
 }
