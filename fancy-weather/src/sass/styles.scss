@@ -142,7 +142,7 @@ button {
         background-color: var(--btnBack);
         color: var(--btnColor);
         border: none;
-        line-height: 30px;
+        line-height: 24px;
         font-size: 20px;
         cursor: pointer;
     }
@@ -1039,7 +1039,7 @@ select:focus {
     transition: all .3s;
     svg {
         font-size: 27px;
-        vertical-align: -0.225em;
+        vertical-align: -0.2em;
     }
 }
 button.speaking,
