@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`proper message 1`] = `null`;
+
+exports[`proper message 2`] = `null`;
+
+exports[`proper message 3`] = `
+<div
+  className="message__container error__log"
+>
+  <div
+    className="error-span"
+  >
+    <span>
+      "Weather" - Listen audio weather
+
+    </span>
+    <span>
+      "Stop" - Stop audio weather
+
+    </span>
+    <span>
+      "Language" - Change language
+
+    </span>
+    <span>
+      "Off" - Turn microphone off
+
+    </span>
+  </div>
+</div>
+`;

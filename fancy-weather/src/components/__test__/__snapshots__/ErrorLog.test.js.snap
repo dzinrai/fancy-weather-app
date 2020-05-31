@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`proper error 1`] = `
+<div
+  className="error__log"
+>
+  <div
+    className="error-span anim"
+    onAnimationEnd={[Function]}
+    onClick={[Function]}
+  >
+    <span>
+      Unknown location
+    </span>
+  </div>
+</div>
+`;
+
+exports[`proper error 2`] = `
+<div
+  className="error__log"
+>
+  <div
+    className="error-span anim"
+    onAnimationEnd={[Function]}
+    onClick={[Function]}
+  >
+    <span>
+      Browser doesn't support voice enter
+    </span>
+  </div>
+</div>
+`;

@@ -36,7 +36,7 @@ import useSpeechRecognition from 'react-speech-kit/dist/useSpeechRecognition';
 library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
 	faMoonRegular, faCaretDown, faImages, faImagesRegular, faThermometerQuarter, faSun, faWind, faTint, faSatellite,
 	faStreetView, faTimes, faMicrophone, faMicrophoneSlash, faPlayCircle, faStopCircle, faDove);
-
+window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 function App(props) {
 	const { t, i18n } = useTranslation();
@@ -62,7 +62,7 @@ function App(props) {
 	const [background, setBackground] = useState({
 		res: null, loaded: false, styles: {}
 	}); 
-	const [bgEnter, setBgEnter] = useState(false);
+	const [bgEnter, setBgEnter] = useState({styles: null});
 	const [preload, setPreload] = useState({
 		res: null, styles: {}, inProcess: true
 	});
@@ -75,6 +75,7 @@ function App(props) {
 	const parentRef = useRef(null);
 	const changeLanguage = lng => {
 		i18n.changeLanguage(lng);
+		if (i18n.language === 'by') window.speechSynthesis.lang = 'be';
 	};
 	// speech recognition
 	const [playWeather, setPlayWeather] = useState(false);
@@ -189,7 +190,6 @@ function App(props) {
 		const url = weatherURL(urlCity);
 		let data;
 		data = await fetchAPI(url);
-		//
 		if (data.status && data.status !== 200) {
 			// status: 404, statusText "Not Found"
 			setError(data);
@@ -284,8 +284,7 @@ function App(props) {
 		bgQuery.push(season);
 		const unsUrl = backgroundsURL(bgQuery.join());
 		console.log('backgrounds tags ' + bgQuery);
-
-		async function preLoadImg() {
+		(async function preLoadImg() {
 			let data;
 			let res = defaultBackground;
 			data = await fetchAPI(unsUrl);
@@ -307,16 +306,13 @@ function App(props) {
 				backgroundSize: 'cover'
 			};
 			setPreload({res: res, styles: backgroundStyle});
-		}
-		preLoadImg();
+		})();
+		//preLoadImg();
 	}
 	function finishLoad(e) {
 		const bg = {res: preload.res, styles: preload.styles, loaded: true};
 		setBgEnter({styles: {...background.styles}});
 		setBackground(bg);
-		setTimeout(() => {
-			setBgEnter(false);
-		}, 1000);
 	}
 	function mapUpdatedEnd() {
 		setMapUpdated({update: false});
@@ -357,7 +353,12 @@ function App(props) {
 	return (
 		<div className='app__container' style={background.styles} ref={ parentRef }>
 			{night && <div className='bg__fog'></div>}
-			{bgEnter && <div className='bg__enter' style={{...bgEnter.styles, height: parentRef.current.offsetHeight}}></div>}
+			{bgEnter && bgEnter.styles && 
+				<div className='bg__enter' 
+					style={{...bgEnter.styles, height: parentRef.current.offsetHeight}}
+					onAnimationEnd={() => setBgEnter({styles: null})}
+				></div>}
+			
 			<header className='header'>
 				<div className='container'>
 					<div className='btn__container'>
@@ -395,6 +396,7 @@ function App(props) {
 					/>
 				</div>				
 			</header>
+
 			<main className='main'>
 				<WeatherBox
 					openData={openData}
@@ -421,9 +423,11 @@ function App(props) {
 					</div>
 				</div>
 			</main>
+
 			<ErrorLog error={error} clearErrors={() => setError(null)} />
 			<ErrorLog error={errorBg} clearErrors={() => setErrorBg(null)} />
 			<TipMessage message={message} clearMessage={() => setMessage(null)} />
+
 			<Menu 
 				opened={menuOpened} 
 				animationOn={animationOn} 

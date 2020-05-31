@@ -66,7 +66,6 @@ function SpeechSyn(props) {
         // eslint-disable-next-line
     }, [props.lang]);
     useEffect(() => {
-        console.log(voice);
         if (props.play && !speaking) speakWeather();
         // eslint-disable-next-line
     }, [props.play, voice]);
@@ -76,7 +75,6 @@ function SpeechSyn(props) {
     }, [props.pitch]);
     useEffect(() => {
         if (props.stop && stopPlaying) {
-            console.log('stopped');
             cancel();
             stopPlaying();
         }

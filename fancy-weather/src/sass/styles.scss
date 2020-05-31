@@ -99,7 +99,7 @@ button {
 .bg__fog,
 .bg__enter {
     position: absolute;
-    z-index: 0;
+    z-index: 1;
     content: '';
     top: 0;
     width: 100%;
@@ -441,12 +441,15 @@ main {
         }
         .forecast__day {
             margin: 0 0 4px;
-            font-size: .8rem;
+            font-size: .775rem;
             overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .forecast__desc {
             margin: 0 0 4px 5px;
             font-size: 14px;
+            overflow: hidden;
         }
         svg {
             position: absolute;
@@ -456,6 +459,9 @@ main {
             top: -10px;
         }
     }
+}
+.forecast__pin:nth-child(2) {
+    margin: 3px 6px;
 }
 .forecast__desc {
     height: 42px;
@@ -552,7 +558,7 @@ main {
         width: 90%;
         flex-direction: row;
         max-height: 85px;
-        margin: 0 auto 6px;
+        margin: 0 auto 6px !important;
     }
     .forecast__pin .forecast__head {
         flex-direction: unset;
@@ -668,7 +674,7 @@ main {
         width: 100%;
         flex-direction: row;
         max-height: 85px;
-        margin: 0 auto 6px;
+        margin: 0 auto 6px !important;
     }
     .forecast__pin .forecast__head {
         flex-direction: unset;

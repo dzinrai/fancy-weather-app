@@ -1,6 +1,7 @@
 function convertedUnits(value, units) {
-    if (units === 'metric') return value;
-    if (units === 'imperial') return value * 9/5 + 32;
+    let newValue = (typeof value !== 'number') ? 0 : value;
+    if (units === 'imperial') return newValue * 9/5 + 32;
+    return newValue;
 }
 
 export default convertedUnits;

@@ -42,9 +42,9 @@ function Search(props) {
 				</span>
 				<Button text={props.btnText} type='submit' value='Submit' />
 			</form>
-			<ReactTooltip id={'voice-search'} type='error' className='tooltip1'>
+			{!props.hideTips && <ReactTooltip id={'voice-search'} type='error' className='tooltip1'>
 				<span>{supported ? t('Voice search') : t('Browser doesn\'t support voice enter')}</span>
-			</ReactTooltip>
+			</ReactTooltip>}
 		</div>
 	);
 

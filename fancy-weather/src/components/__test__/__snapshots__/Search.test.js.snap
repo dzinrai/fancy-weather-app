@@ -1,0 +1,129 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`proper search container 1`] = `
+<div
+  className="search__container"
+>
+  <form
+    className="search__form"
+    onSubmit={[Function]}
+  >
+    <input
+      className=""
+      onChange={[Function]}
+      placeholder="Search city"
+      value=""
+    />
+    <span
+      className="mic"
+      data-for="voice-search"
+      data-tip={true}
+      type="btn"
+    />
+    <button
+      data-for={null}
+      data-tip={false}
+      type="submit"
+      value="Submit"
+    >
+      Search
+    </button>
+  </form>
+</div>
+`;
+
+exports[`proper search container 2`] = `
+<div
+  className="search__container"
+>
+  <form
+    className="search__form"
+    onSubmit={[Function]}
+  >
+    <input
+      className="wrong__input"
+      onChange={[Function]}
+      placeholder="Search city"
+      value=""
+    />
+    <span
+      className="mic"
+      data-for="voice-search"
+      data-tip={true}
+      type="btn"
+    />
+    <button
+      data-for={null}
+      data-tip={false}
+      type="submit"
+      value="Submit"
+    >
+      Search
+    </button>
+  </form>
+</div>
+`;
+
+exports[`proper search container 3`] = `
+<div
+  className="search__container"
+>
+  <form
+    className="search__form"
+    onSubmit={[Function]}
+  >
+    <input
+      className="wrong__input"
+      onChange={[Function]}
+      placeholder="Search city"
+      value=""
+    />
+    <span
+      className="mic"
+      data-for="voice-search"
+      data-tip={true}
+      type="btn"
+    />
+    <button
+      data-for={null}
+      data-tip={false}
+      type="submit"
+      value="Submit"
+    >
+      Search
+    </button>
+  </form>
+</div>
+`;
+
+exports[`proper search container 4`] = `
+<div
+  className="search__container"
+>
+  <form
+    className="search__form"
+    onSubmit={[Function]}
+  >
+    <input
+      className=""
+      onChange={[Function]}
+      placeholder="Search city"
+      value=""
+    />
+    <span
+      className="mic"
+      data-for="voice-search"
+      data-tip={true}
+      type="btn"
+    />
+    <button
+      data-for={null}
+      data-tip={false}
+      type="submit"
+      value="Submit"
+    >
+      Search
+    </button>
+  </form>
+</div>
+`;

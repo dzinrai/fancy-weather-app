@@ -17,7 +17,7 @@ const weather3daysURL = (pLat, pLon) => {
     return `https://api.openweathermap.org/data/2.5/onecall?lat=${pLat}&lon=${pLon}&exclude=minutely,hourly&units=metric&appid=${weatherApiKey}`;
 };
 const backgroundsURL = (themes, page=1) => {
-    const query = 'nature'.concat(themes ? ','.concat(themes) : '');
+    const query = themes ? themes : 'nature';
     //return `https://api.unsplash.com/photos/random?orientation=landscape&per_page=10&query=${query}&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek`;		
     return proxy + `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${flickr}&tags=${query}&tag_mode=all&extras=url_h&page=${page}&format=json&nojsoncallback=1`;
 };

@@ -1,5 +1,5 @@
-function getSeason(lat) {
-    const day = new Date();
+function getSeason(lat, date) {
+    const day = date ? date : new Date();
     const month = day.getMonth();
     const seasons_ = (lat >= 0) ? ['summer', 'autumn', 'winter', 'spring'] : ['winter', 'spring', 'summer', 'autumn'];
     let season = seasons_[0];

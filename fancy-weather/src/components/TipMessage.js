@@ -18,7 +18,6 @@ function TipMessage(props) {
                     {message.map((line, i) => 
                         <span key={i+1}>{line}</span>
                     )}
-					
 					<FontAwesomeIcon icon='times' onClick={props.clearMessage} className='close__btn' />
 				</div>
 			</div>

@@ -31,7 +31,7 @@ function WeatherBox(props) {
 	};
 	//
 	let forecast = props.forecast;
-	//<img src={`http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`} alt={t(day.weather[0].description)} />
+
 	return (
 	<div className="weather__box">
 		<h2 className='city'>{city.toUpperCase()}</h2>
@@ -62,7 +62,9 @@ function WeatherBox(props) {
 				</div>
 			</div>
 		</div>
+
 		<div className="forecast__weather">
+
 			{forecast.map((day, i) => 
 				<div key={i+1} className="forecast__pin">
 					<div className="forecast__head">
@@ -103,7 +105,9 @@ function WeatherBox(props) {
 				</div>
 			)
 			}
+
 		</div>
+
 		<ReactTooltip id={'now'} type='error' className='tooltip1'>
 			<span>{t('Now')}</span>
 		</ReactTooltip>
