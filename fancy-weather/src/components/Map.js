@@ -16,7 +16,7 @@ function Map(props) {
 		longitude: 27.34,
 		zoom: 8,
 		bearing: 0,
-        pitch: 0
+        pitch: 50
 	});
 	const update = props.mapUpdated.update;
 	const updateEnd = props.updateEnd;
