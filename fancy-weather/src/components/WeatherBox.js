@@ -3,17 +3,20 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactTooltip from 'react-tooltip';
 import Clock from './Clock';
+import Day from './Day';
 import Icon from './Icon';
-import {ReactComponent as Day} from '../img/static/day.svg';
-import {ReactComponent as Night} from '../img/static/night.svg';
+import {ReactComponent as DayIcon} from '../img/static/day.svg';
+import {ReactComponent as NightIcon} from '../img/static/night.svg';
+import convertedUnits from '../assets/convertedUnits';
 
 function WeatherBox(props) {
 	const { t } = useTranslation();
 	const city = typeof props.cityInfo === 'string' ? props.cityInfo : '-';
 	const openData = props.openData;
 	const main = props.openData.main;
-	const temperature = main ? convertedUnits(main.temp) : 0;
-	const feels_like = main ? convertedUnits(main.feels_like) : 0;
+	const units = props.units ? props.units : 'metric';
+	const temperature = main ? convertedUnits(main.temp, units) : 0;
+	const feels_like = main ? convertedUnits(main.feels_like, units) : 0;
 	const wind = props.openData.wind;
 	const weather = props.openData.weather[0];
 	const dayTemp = openData.dayTemp ? openData.dayTemp : 0;
@@ -26,69 +29,51 @@ function WeatherBox(props) {
 		if (weatherT && weatherT.description === 'moderate rain') icon = icon.concat('-moderate');
 		return icon;
 	};
-	const day = new Date();
-	const whatDay = ["Sunday", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-	const dayName = whatDay[day.getDay()];
-	const month = day.toDateString().split(' ')[1];
 	//
-	let days = props.forecast;
-	const d1 = new Date();
-	const d2 = new Date();
-	const d3 = new Date();
-	d1.setDate(d1.getDate()+1);
-	d2.setDate(d2.getDate()+2);
-	d3.setDate(d3.getDate()+3);
-	const ddd = [d1, d2, d3];
-	function convertedUnits(value) {
-		const units = props.units;
-		if (units === 'metric') return value;
-		if (units === 'imperial') return value * 9/5 + 32;
-
-	}
+	let forecast = props.forecast;
 	//<img src={`http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`} alt={t(day.weather[0].description)} />
 	return (
 	<div className="weather__box">
 		<h2 className='city'>{city.toUpperCase()}</h2>
-		<span className='time'>{`${t(dayName)} ${day.getDate()} ${t(month)} `}</span><Clock countryTag={props.openData.countryTag} timezone={props.openData.timezone} />
-		<div>
-			<div className='main__weather'>
-				<div className='left-box'>
-					<FontAwesomeIcon icon='thermometer-quarter' />
-					<span data-tip data-for={'now'} className="average_temp">{ (temperature ? temperature.toFixed(0) : '0') + '°'}</span>
-					<Icon id={getIcon(weather)} animate={props.animationOn} width='150' height='150' viewBox="6 10 50 50" />
-					<div className='during__temps'>
-						<span data-tip data-for={'dayTemp'+0} className="day_temp">
-							<Day className={props.animationOn ? 'anim' : ''} width='40' height='40' viewBox="16 16 32 32" />
-							<span>{dayTemp.toFixed(0)+'°'}</span>
-						</span>
-						<span data-tip data-for={'nightTemp'+0} className="night_temp">
-							<Night className={props.animationOn ? 'anim' : ''} width='40' height='40' viewBox="16 16 32 32" />
-							<span>{nightTemp.toFixed(0)+'°'}</span>
-						</span>
-					</div>
+		<Day monthShow={true} className='time' />
+		<Clock countryTag={props.openData.countryTag} timezone={props.openData.timezone} />
+		<div className='main__weather'>
+			<div className='left-box'>
+				<FontAwesomeIcon icon='thermometer-quarter' />
+				<span data-tip data-for={'now'} className="average_temp">{ (temperature ? temperature.toFixed(0) : '0') + '°'}</span>
+				<Icon id={getIcon(weather)} animate={props.animationOn} width='150' height='150' viewBox="6 10 50 50" />
+				<div className='during__temps'>
+					<span data-tip data-for={'dayTemp'+0} className="day_temp">
+						<DayIcon className={props.animationOn ? 'anim' : ''} width='40' height='40' viewBox="16 16 32 32" />
+						<span>{convertedUnits(dayTemp, units).toFixed(0)+'°'}</span>
+					</span>
+					<span data-tip data-for={'nightTemp'+0} className="night_temp">
+						<NightIcon className={props.animationOn ? 'anim' : ''} width='40' height='40' viewBox="16 16 32 32" />
+						<span>{convertedUnits(nightTemp, units).toFixed(0)+'°'}</span>
+					</span>
 				</div>
-				<div className='right-box'>
-					<span>{t(description).toUpperCase()}</span>
-					<span>{t('FEELS LIKE').toUpperCase()}: {(feels_like ? feels_like.toFixed(0) : '0') + '°'}</span>
-					<div className="wind-humidity__container">
-						<span data-tip data-for={'wind'+0}><FontAwesomeIcon icon='wind' size='1x' /> {wind ? wind.speed.toFixed(0) : '-'} {t('m/s')}</span>
-						<span data-tip data-for={'humidity'+0}><FontAwesomeIcon icon='tint' size='1x' /> {main ? main.humidity : '-'}%</span>
-					</div>
+			</div>
+			<div className='right-box'>
+				<span>{t(description).toUpperCase()}</span>
+				<span>{t('FEELS LIKE').toUpperCase()}: {(feels_like ? feels_like.toFixed(0) : '0') + '°'}</span>
+				<div className="wind-humidity__container">
+					<span data-tip data-for={'wind'+0}><FontAwesomeIcon icon='wind' size='1x' /> {wind ? wind.speed.toFixed(0) : '-'} {t('m/s')}</span>
+					<span data-tip data-for={'humidity'+0}><FontAwesomeIcon icon='tint' size='1x' /> {main ? main.humidity : '-'}%</span>
 				</div>
 			</div>
 		</div>
 		<div className="forecast__weather">
-			{days.map((day, i) => 
+			{forecast.map((day, i) => 
 				<div key={i+1} className="forecast__pin">
 					<div className="forecast__head">
-						<span className="forecast__day">{ t(whatDay[(ddd[i]).getDay()])}</span>
+						<Day dayOffset={i+1} monthShow={false} className='forecast__day' />
 						<span className="forecast__desc">{t(day.weather[0].description)}</span>
 						<Icon id={getIcon(day.weather[0])} animate={props.animationOn} />
 					</div>	
 					<div className="forecast__line">
 						<span data-tip data-for={'dayTemp'+i} className="day_temp">
 							<FontAwesomeIcon icon='sun' /> 
-							{convertedUnits(day.temp.day).toFixed(0)+ '°'}
+							{convertedUnits(day.temp.day, units).toFixed(0)+ '°'}
 							<ReactTooltip id={'dayTemp'+i} type='error' className='tooltip1'>
 								<span>{t('By day')}</span>
 							</ReactTooltip>
@@ -103,7 +88,7 @@ function WeatherBox(props) {
 					<div className="forecast__line">
 						<span data-tip data-for={'nightTemp'+i} className="night_temp">
 							<FontAwesomeIcon icon='moon' /> 
-							{convertedUnits(day.temp.night).toFixed(0)+ '°'}
+							{convertedUnits(day.temp.night, units).toFixed(0)+ '°'}
 							<ReactTooltip id={'nightTemp'+i} type='error' className='tooltip1'>
 								<span>{t('At night')}</span>
 							</ReactTooltip>
