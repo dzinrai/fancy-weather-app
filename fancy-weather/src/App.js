@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import './App.css';
 import settings from './localStorage/localStorageInit';
+import commands from './assets/commands'; 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSyncAlt, 
 	faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
@@ -15,6 +16,7 @@ import SpeechSyn from './components/SpeechSyn';
 import DropButton from './components/DropButton';
 import WeatherBox from './components/WeatherBox';
 import ErrorLog from './components/ErrorLog';
+import TipMessage from './components/TipMessage';
 import '../node_modules/mapbox-gl/dist/mapbox-gl.css';
 import Map from './components/Map';
 import Menu from './components/Menu';
@@ -27,6 +29,7 @@ import getDayTime from './assets/getDayTime.js';
 import getSeason from './assets/getSeason';
 import shuffleArray from './assets/shuffleArray';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import useSpeechRecognition from 'react-speech-kit/dist/useSpeechRecognition';
 
 
 
@@ -73,6 +76,66 @@ function App(props) {
 	const changeLanguage = lng => {
 		i18n.changeLanguage(lng);
 	};
+	// speech recognition
+	const [playWeather, setPlayWeather] = useState(false);
+	const [exit, setExit] = useState(false);
+	const [listeningResult, setListeningResult] = useState('');
+	const [message, setMessage] = useState({listening: false});
+	const { listen, listening, stop, supported } = useSpeechRecognition({
+		onResult: (result) => {
+			setError(null);
+			setErrorBg(null);
+			if (commands.includes(result)) stopPlaying();
+			if (!commands.includes(result)) {
+				startSearch(result);
+				setListeningResult(result);
+			} else if (['Weather', 'weather'].includes(result)) {
+				changeLanguage('en');
+				setPlayWeather(true);
+			} else if (['погода'].includes(result)) {
+				changeLanguage('ru');
+				setPlayWeather(true);
+			} else if (['Прагноз','прагноз','прогноз','Прогноз'].includes(result)) {
+				changeLanguage('by');
+				setPlayWeather(true);
+			} else if (['stop', 'стоп','Хватит','хватит','Хопіць','хопіць'].includes(result)) {
+				stopPlaying();
+			} else if (['Off','off', 'аф','оф', 'Выключись','выключись','Выключыся','выключыся','Выключайся'].includes(result)) {
+				setExit(true); // cant stop() from here
+			} else if (['язык', 'language','Язык', 'Language','lang','Мова','мова'].includes(result)) {
+				if (i18n.language === 'by') changeLanguage('en');
+				else if (i18n.language === 'ru') changeLanguage('by');
+				else if (i18n.language === 'en') changeLanguage('ru');
+			} 
+		},
+		onEnd: () => {}
+	});
+	const startListening = (event) => {
+		if (!supported && props.errorHandler) props.errorHandler({statusText: "Browser doesn't support voice enter"});
+		if (!supported) return null;
+		setExit(false);
+		setMessage({listening: true});
+		console.log('start');
+		if (event) event.preventDefault();
+		if (!listening) listen({interimResults: false});
+		else stop();
+	};
+	const stopListening = (event) => {
+		if (!supported) return null;
+		stopPlaying();
+		setMessage({listening: false});
+		stop();
+		if (event) event.preventDefault();
+		console.log('stop');
+	};
+	const stopPlaying = () => {
+		setPlayWeather(false);
+	};
+	useEffect(() => {
+		if (exit) stopListening();
+		// eslint-disable-next-line
+	}, [exit]);
+	//
 	useEffect(() => {    
 		i18n.changeLanguage(importSettings.i18nextLng);
 		async function preLoad() {
@@ -306,7 +369,7 @@ function App(props) {
 							animate={background.res !== preload.res}
 							animClass={'fa-spin'}
 						/>
-						<DropButton className='lang__switch' langChanger={(e) => changeLanguage(e)} />
+						<DropButton className='lang__switch' langChanger={(e) => changeLanguage(e)}  />
 						<DoubleButton 
 							onClick={[() => setUnits('imperial'), () => setUnits('metric')]}
 							units={units} />
@@ -314,15 +377,22 @@ function App(props) {
 							cityInfo={cityInfo ? cityInfo[i18n.language] : openData.city.concat(', ').concat(openData.country)}
 							openData={openData}
 							lang={i18n.language}
-							hide={true}
+							play={playWeather}
+							stop={!playWeather}
+							stopPlaying={stopPlaying}
 						/>
 					</div>
 					<Search 
 						text={t('Search city')}
 						btnText={t('Search')}
+						search={listeningResult}
 						startSearch={startSearch}
 						error={error ? true : false}
 						errorHandler={(newError) => handleError(newError)}
+						stopListening={stopListening}
+						startListening={startListening}
+						listening={listening}
+						supported={supported}
 					/>
 				</div>				
 			</header>
@@ -354,6 +424,7 @@ function App(props) {
 			</main>
 			<ErrorLog error={error} clearErrors={() => setError(null)} />
 			<ErrorLog error={errorBg} clearErrors={() => setErrorBg(null)} />
+			<TipMessage message={message} clearMessage={() => setMessage(null)} />
 			<Menu 
 				opened={menuOpened} 
 				animationOn={animationOn} 

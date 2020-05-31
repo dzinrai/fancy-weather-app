@@ -5,6 +5,7 @@ import ReactTooltip from 'react-tooltip';
 function Button(props) {
 	const [animation, setAnimation] = useState('');
 	const animClass = props.animClass;
+	const tooltip = props.tooltip ? props.tooltip : false;
 
 	useEffect(() => {
 		if (props.animate) setAnimation(animClass);
@@ -17,15 +18,17 @@ function Button(props) {
 			onClick={props.onClick} 
 			type={props.type}
 			value={props.value}
-			>
+			data-tip={tooltip ? true : false} 
+			data-for={tooltip ? tooltip.id : null}
+			data-testid={props.testId}
+		>
 			{props.icon && <FontAwesomeIcon 
 				icon={props.icon} 
 				className={props.iconClass + ' ' + animation}
 			/>}
 			{props.text}
-			{props.tooltip && <span data-tip data-for={props.tooltip.id} className='tooltip__target-box'></span>}
-			{props.tooltip && <ReactTooltip id={props.tooltip.id} type='error' className='tooltip1'>
-				<span>{props.tooltip.text}</span>
+			{tooltip && <ReactTooltip id={tooltip.id} type='error' className='tooltip1'>
+				<span data-testid={'tooltip1-' + (props.testId ? props.testId : '')}>{tooltip.text}</span>
 			</ReactTooltip>}
 		</button>
 	);

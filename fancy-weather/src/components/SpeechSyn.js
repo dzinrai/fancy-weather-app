@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 import { useSpeechSynthesis } from "react-speech-kit";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ReactTooltip from "react-tooltip";
+import Button from "./Button";
 
 
 
@@ -33,6 +32,7 @@ function SpeechSyn(props) {
     const day = new Date();
     const cityInfo = typeof props.cityInfo === 'string' ? props.cityInfo.split(',')[0] : '';
     const [value, setValue] = useState("");
+    const [pitch, setPitch] = useState(props.pitch);
     const [ruVoice, setRuVoice] = useState(null);
     const [enVoice, setEnVoice] = useState(null);
     const [voice, setVoice] = useState(enVoice);
@@ -41,6 +41,7 @@ function SpeechSyn(props) {
         if (props.lang === 'en') setVoice(enVoice);
         else setVoice(ruVoice);
     };
+    const stopPlaying = props.stopPlaying ? props.stopPlaying : null;
     useEffect(() => {
         changedLang();
         // eslint-disable-next-line
@@ -61,32 +62,42 @@ function SpeechSyn(props) {
         // eslint-disable-next-line
     }, [props.openData, props.lang]);
     useEffect(() => {
-        cancel();
         changedLang();
         // eslint-disable-next-line
     }, [props.lang]);
-
+    useEffect(() => {
+        console.log(voice);
+        if (props.play && !speaking) speakWeather();
+        // eslint-disable-next-line
+    }, [props.play, voice]);
+    useEffect(() => {
+        if (props.pitch >= 0) setPitch(props.pitch);
+        // eslint-disable-next-line
+    }, [props.pitch]);
+    useEffect(() => {
+        if (props.stop && stopPlaying) {
+            console.log('stopped');
+            cancel();
+            stopPlaying();
+        }
+        // eslint-disable-next-line
+    }, [props.stop]);
     const speakWeather = () => {
         if (speaking) {
             cancel();
-        } else speak({ text: value, voice: voice  });
-    };
-        
+            stopPlaying();
+        } else speak({ text: value, voice: voice, pitch: pitch  });
+    };    
   
     return (
-      <div>
-        <textarea
-          value={value}
-          onChange={event => setValue(event.target.value)}
-          className={props.hide ? 'hidden' : ''}
+        <Button 
+            onClick={speakWeather}
+            className={'audio__play ' + (speaking ? 'speaking' : '')}
+            icon={speaking ? 'stop-circle' : 'play-circle'}
+            iconClass={speaking ? 'speaking' : ''}
+            tooltip={{id: 'listen-weather', text: t('Listen today\'s weather')}}
+            testId={'audio-play'}
         />
-        <button onClick={speakWeather} className={'audio__play ' + (speaking ? 'speaking' : '')} data-tip data-for='listen-weather'>
-            <FontAwesomeIcon icon={speaking ? 'stop-circle' : 'play-circle'} className={speaking ? 'speaking' : ''} />
-        </button>
-        <ReactTooltip id={'listen-weather'} type='error' className='tooltip1'>
-            <span>{t('Listen today\'s weather')}</span>
-        </ReactTooltip>
-      </div>
     );
 }
 

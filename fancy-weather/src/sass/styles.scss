@@ -306,6 +306,9 @@ main {
     font-size: 1.2rem;
     line-height: 30px;
     font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .time {
     font-size: 20px;
@@ -1013,6 +1016,9 @@ main {
     .error-span.anim {
         animation: shake .4s linear 1;
     }
+}
+.error__log.message__container {
+    background-color: #04b4b4;
 }
 //
 :focus {

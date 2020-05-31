@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSpeechRecognition } from "react-speech-kit";
 import Button from './Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactTooltip from 'react-tooltip';
@@ -8,39 +7,21 @@ import { useTranslation } from 'react-i18next';
 function Search(props) {
 	const { t } = useTranslation();
 	const [search, setSearch] = useState('');
-	const { listen, listening, stop, supported } = useSpeechRecognition({
-		onResult: result => {
-			setSearch(result);
-		},
-		onEnd: () => {
-			handleSubmit();
-		}
-	});
+	const startListening = props.startListening;
+	const stopListening = props.stopListening;
+	const listening = props.listening;
+	const supported = props.supported;
 	useEffect(() => {
-		stop();
-		// eslint-disable-next-line
-	},[search]);
-	const startListening = (event) => {
-		if (!supported && props.errorHandler) props.errorHandler({statusText: "Browser doesn't support voice enter"});
-		if (!supported) return null;
-		console.log('start', event);
+		if (props.search) setSearch(props.search);
+	},[props.search]);
+	const handleSubmit = (event) => {
+		console.log(search, listening);
 		if (event) event.preventDefault();
-		if (!listening) listen({interimResults: false});
-		else stop();
-	};
-	const stopListening = (event) => {
-		if (!supported) return null;
-		stop();
-		if (event) event.preventDefault();
-		console.log('stop');
-	};
-	function handleSubmit(event, res) {
-		console.log(res,search, listening);
-		if (event) event.preventDefault();
-		if (!res && !search) return;
-		const searchCity = !res ? search : res;
+		if (!search) return;
+		const searchCity = search;
 		props.startSearch(searchCity);
-	}
+	};
+
 	return (
 		<div className='search__container'>
 			<form onSubmit={handleSubmit} className='search__form'>
@@ -63,7 +44,6 @@ function Search(props) {
 			</form>
 			<ReactTooltip id={'voice-search'} type='error' className='tooltip1'>
 				<span>{supported ? t('Voice search') : t('Browser doesn\'t support voice enter')}</span>
-				
 			</ReactTooltip>
 		</div>
 	);
