@@ -215,7 +215,6 @@ function App(props) {
 		cityArray.by =data2.text[0];
 		const data3 = await fetchAPI(translateAPI(cityLine, null, 'ru'), true);
 		cityArray.ru =data3.text[0];
-		console.log(cityArray);
 		setDataUpdate((dataUpdate) => ({
 			...dataUpdate,
 			dataCityInfo: cityArray
@@ -313,7 +312,7 @@ function App(props) {
 	}
 	function finishLoad(e) {
 		const bg = {res: preload.res, styles: preload.styles, loaded: true};
-		setBgEnter(true);
+		setBgEnter({styles: {...background.styles}});
 		setBackground(bg);
 		setTimeout(() => {
 			setBgEnter(false);
@@ -358,7 +357,7 @@ function App(props) {
 	return (
 		<div className='app__container' style={background.styles} ref={ parentRef }>
 			{night && <div className='bg__fog'></div>}
-			{bgEnter && <div className='bg__enter' style={{...background.styles, height: parentRef.current.offsetHeight}}></div>}
+			{bgEnter && <div className='bg__enter' style={{...bgEnter.styles, height: parentRef.current.offsetHeight}}></div>}
 			<header className='header'>
 				<div className='container'>
 					<div className='btn__container'>
