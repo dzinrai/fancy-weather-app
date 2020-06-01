@@ -41,6 +41,7 @@ function Map(props) {
 			_goToViewport({longitude: lon, latitude: lat });
 			updateEnd();
 		}
+		// eslint-disable-next-line
 	}, [update]);
 	function _clickHandler(e) {
 		if (e.target.className === 'mapboxgl-ctrl-icon') {
