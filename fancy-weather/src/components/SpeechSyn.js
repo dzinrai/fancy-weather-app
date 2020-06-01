@@ -7,7 +7,9 @@ import Button from "./Button";
 
 const whatDay = ["Sunday", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 function getAvailableVoice(lng) {
+    if (!window) return null;
     const synth = window.speechSynthesis;
+    if (!synth) return null;
     const voices = synth.getVoices();
     let ruVoice;
     let enVoice;
@@ -60,13 +62,13 @@ function SpeechSyn(props) {
         text = text.concat(`${t('Humidity')} ${props.openData.main.humidity.toFixed(0)}%`);
         setValue(text);
         // eslint-disable-next-line
-    }, [props.openData, props.lang]);
+    }, [props.openData, props.lang, cityInfo]);
     useEffect(() => {
         changedLang();
         // eslint-disable-next-line
     }, [props.lang]);
     useEffect(() => {
-        if (props.play && !speaking) speakWeather();
+        if (props.play && !speaking && voice) speakWeather();
         // eslint-disable-next-line
     }, [props.play, voice]);
     useEffect(() => {

@@ -15,7 +15,6 @@ function Search(props) {
 		if (props.search) setSearch(props.search);
 	},[props.search]);
 	const handleSubmit = (event) => {
-		console.log(search, listening);
 		if (event) event.preventDefault();
 		if (!search) return;
 		const searchCity = search;

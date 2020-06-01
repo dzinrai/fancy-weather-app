@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactMapGL, { Marker, NavigationControl,FullscreenControl,GeolocateControl } from 'react-map-gl';
+import ReactMapGL, { Marker, NavigationControl,FullscreenControl,GeolocateControl,FlyToInterpolator } from 'react-map-gl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
@@ -16,25 +16,32 @@ function Map(props) {
 		longitude: 27.34,
 		zoom: 8,
 		bearing: 0,
-        pitch: 50
+		pitch: 0,
 	});
 	const update = props.mapUpdated.update;
 	const updateEnd = props.updateEnd;
 	const lon = props.mapUpdated.lon;
 	const lat = props.mapUpdated.lat;
-	useEffect(() => {
-		if (update) {
-			setViewport((viewport) => ({
-				...viewport,
-				longitude: lon,
-				latitude: lat,
-			}));
-			updateEnd();
-		}
-	}, [update, lon, lat, updateEnd]);
 	function updateControl(view) {
 		setViewport(view);
 	}
+	const _onViewportChange = viewport => setViewport({...viewport});
+
+	const _goToViewport = ({longitude, latitude}) => {
+		_onViewportChange({
+			longitude,
+			latitude,
+			zoom: 8,
+			transitionInterpolator: new FlyToInterpolator({speed: 2}),
+			transitionDuration: 'auto'
+		});
+	};
+	useEffect(() => {	
+		if (update) {
+			_goToViewport({longitude: lon, latitude: lat });
+			updateEnd();
+		}
+	}, [update]);
 	function _clickHandler(e) {
 		if (e.target.className === 'mapboxgl-ctrl-icon') {
 			setViewport({
@@ -60,7 +67,9 @@ function Map(props) {
 				longitude={props.lon ? props.lon : 27}
 				latitude={props.lat ? props.lat : 53}
 				offsetTop={-35}
-          		offsetLeft={-28}
+				offsetLeft={-28}
+				transitionInterpolator={new FlyToInterpolator({speed: 1.2})}
+				transitionDuration='auto'
 			>
 				<div className={'marker__container ' + animate}>
 					<FontAwesomeIcon icon='map-marker-alt' className={'markerBack'} />

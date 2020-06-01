@@ -18,8 +18,11 @@ const weather3daysURL = (pLat, pLon) => {
 };
 const backgroundsURL = (themes, page=1) => {
     const query = themes ? themes : 'nature';
+    const add = ['sky','forest','field','building','ocean','see','mountain','tree','fire','flora','fauna'];
+    const i = Math.floor(Math.random() * add.length);
+    //console.log(query+','+add[i]);
     //return `https://api.unsplash.com/photos/random?orientation=landscape&per_page=10&query=${query}&client_id=rxs3fdHZC3dLg5DeLiWmWrxhCsRAsH9Na-aPXHIV1ek`;		
-    return proxy + `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${flickr}&tags=${query}&tag_mode=all&extras=url_h&page=${page}&format=json&nojsoncallback=1`;
+    return proxy + `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${flickr}&tags=${query+','+add[i]}&tag_mode=all&extras=url_h&page=${page}&format=json&nojsoncallback=1`;
 };
 const getLoc = (placeName,lang='en') => {
     return `https://api.opencagedata.com/geocode/v1/json?q=${p(placeName)}&key=${cageData}&language=${lang}&pretty=1`;

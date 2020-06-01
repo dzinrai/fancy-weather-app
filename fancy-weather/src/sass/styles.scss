@@ -32,6 +32,8 @@
 body {
     margin: 0;
     font-family: Roboto,Arial,sans-serif;
+    background: rgb(255,255,251);
+    background: radial-gradient(circle, rgba(255,255,251,1) 0%, rgba(148,187,233,1) 100%);
 }
 button {
     position: relative;
