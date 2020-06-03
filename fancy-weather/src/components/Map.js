@@ -12,23 +12,21 @@ function Map(props) {
 	const [viewport, setViewport] = useState({
 		width: width,
 		height: height,
-		latitude: 53.54,
-		longitude: 27.34,
+		latitude: 0,
+		longitude: 0,
 		zoom: 8,
 		bearing: 0,
 		pitch: 0,
 	});
-	const update = props.mapUpdated.update;
 	const updateEnd = props.updateEnd;
-	const lon = props.mapUpdated.lon;
-	const lat = props.mapUpdated.lat;
-	function updateControl(view) {
-		setViewport(view);
+	function updateViewport(view) {
+		setViewport(viewport => ({
+			...viewport,
+			...view
+		}));
 	}
-	const _onViewportChange = viewport => setViewport({...viewport});
-
 	const _goToViewport = ({longitude, latitude}) => {
-		_onViewportChange({
+		updateViewport({
 			longitude,
 			latitude,
 			zoom: 8,
@@ -37,12 +35,15 @@ function Map(props) {
 		});
 	};
 	useEffect(() => {	
-		if (update) {
-			_goToViewport({longitude: lon, latitude: lat });
+		const update = props.mapUpdated.update;
+		const longitude = props.mapUpdated.lon;
+		const latitude = props.mapUpdated.lat;
+		if (update && props.lon !== viewport.longitude && props.lat !== viewport.latitude) {
+			_goToViewport({longitude, latitude});
 			updateEnd();
 		}
 		// eslint-disable-next-line
-	}, [update]);
+	}, [props.mapUpdated]);
 	function _clickHandler(e) {
 		if (e.target.className === 'mapboxgl-ctrl-icon') {
 			setViewport({
@@ -59,9 +60,11 @@ function Map(props) {
 	return (
 		<ReactMapGL
 			{...viewport}
+			latitude={viewport.latitude}
+  			longitude={viewport.longitude}
 			mapStyle={customStyle}
 			mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-			onViewportChange={(viewport) => updateControl(viewport)}
+			onViewportChange={(viewport) => updateViewport(viewport)}
 			onClick={(e) => _clickHandler(e)}
 		>
 			<Marker
@@ -69,8 +72,6 @@ function Map(props) {
 				latitude={props.lat ? props.lat : 53}
 				offsetTop={-35}
 				offsetLeft={-28}
-				transitionInterpolator={new FlyToInterpolator({speed: 1.2})}
-				transitionDuration='auto'
 			>
 				<div className={'marker__container ' + animate}>
 					<FontAwesomeIcon icon='map-marker-alt' className={'markerBack'} />
@@ -79,7 +80,7 @@ function Map(props) {
 				</div>		
 			</Marker>
 			<div className='controls__navigation'>
-				<NavigationControl onViewportChange={(viewport) => updateControl(viewport)} />
+				<NavigationControl onViewportChange={(viewport) => updateViewport(viewport)} />
 			</div>
 			<div className='controls__fullscreen'>
 				<FullscreenControl  />
