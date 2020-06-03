@@ -7,9 +7,9 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSyncAlt, 
 	faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
 	faCaretDown, faImages, faThermometerQuarter, faSun, faWind, faTint, faSatellite, faStreetView,
-	faTimes, faMicrophone, faMicrophoneSlash, faPlayCircle, faStopCircle, faDove } from '@fortawesome/free-solid-svg-icons';
+	faTimes, faMicrophone, faMicrophoneSlash, faPlayCircle, faStopCircle, faDove, faStar, faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 import { faMoon as faMoonRegular,
-		 faImages as faImagesRegular  } from '@fortawesome/free-regular-svg-icons';
+		 faImages as faImagesRegular, faStar as faStarRegular  } from '@fortawesome/free-regular-svg-icons';
 import Button from './components/Button';
 import Search from './components/Search';
 import SpeechSyn from './components/SpeechSyn';
@@ -35,7 +35,7 @@ import useSpeechRecognition from 'react-speech-kit/dist/useSpeechRecognition';
 
 library.add(faSyncAlt, faCloudRain, faCloudSunRain, faCloudSun, faMobile, faMapMarkerAlt, faCog, faMoon, 
 	faMoonRegular, faCaretDown, faImages, faImagesRegular, faThermometerQuarter, faSun, faWind, faTint, faSatellite,
-	faStreetView, faTimes, faMicrophone, faMicrophoneSlash, faPlayCircle, faStopCircle, faDove);
+	faStreetView, faTimes, faMicrophone, faMicrophoneSlash, faPlayCircle, faStopCircle, faDove, faStar, faStarRegular, faCaretLeft);
 window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 function App(props) {
@@ -190,7 +190,7 @@ function App(props) {
 		const url = weatherURL(urlCity);
 		let data;
 		data = await fetchAPI(url);
-		if (data.status && data.status !== 200) {
+		if (data && data.status && data.status !== 200) {
 			// status: 404, statusText "Not Found"
 			setError(data);
 			setErrorBg(null);
@@ -225,7 +225,7 @@ function App(props) {
 		const url = weather3daysURL(pLat, pLon);
 		let data;
 		data = await fetchAPI(url);
-		if (data.status && data.status !== 200) {
+		if (data && data.status && data.status !== 200) {
 			// status: 404, statusText "Not Found"
 			setError(data);
 			setErrorBg(null);
@@ -369,7 +369,13 @@ function App(props) {
 							animate={background.res !== preload.res}
 							animClass={'fa-spin'}
 						/>
-						<DropButton className='lang__switch' langChanger={(e) => changeLanguage(e)}  />
+						<DropButton 
+							id='langs' 
+							name='langs'
+							changer={(e) => changeLanguage(e)}
+							value={i18n.language ? i18n.language : 'en'}
+							values={{val1: ['en','EN'], val2: ['ru','RU'], val3: ['by','BY']}}
+						/>
 						<DoubleButton 
 							onClick={[() => setUnits('imperial'), () => setUnits('metric')]}
 							units={units} />
@@ -400,10 +406,12 @@ function App(props) {
 			<main className='main'>
 				<WeatherBox
 					openData={openData}
-					cityInfo={cityInfo ? cityInfo[i18n.language] : openData.city.concat(', ').concat(openData.country)}
+					cityInfo={cityInfo ? cityInfo : openData.city.concat(', ').concat(openData.country)}
 					forecast={forecast !== null ? forecast : []}
 					units={units}
 					animationOn={animationOn}
+					pinned={importSettings.pinned}
+					startSearch={startSearch}
 				/>
 				<div className='map-side__container'>
 					<div className='mapbox__container'>

@@ -164,54 +164,55 @@ button {
     .background__switch .fa-spin {
         animation: rotate .7s linear infinite;
     }
-    .lang__switch {
-        position: relative;
-        background-color: var(--btnBack);
-        color: var(--btnColor);
-        border-radius: 5px;
-        .switch_select {
-            position: relative;
-            z-index: 1;
-            width: 60px;
-            height: 44px;
-            padding-left: 7px;
-            -moz-appearance: none;
-            -webkit-appearance: none;
-            appearance: none;
-            background-color: transparent;
-            border: none;
-            font-size: 18px;
-            color: var(--btnColor);
-            cursor: pointer;
-            option {
-                background-color: var(--btnBack);
-                color: var(--btnColor);
-            }
-            option:checked,
-            option:hover { 
-                box-shadow: 0 0 10px 100px rgb(4, 30, 39) inset;
-            }
-        }
-        svg {
-            position: absolute;
-            font-size: .8rem;
-            top: 25%;
-            right: 5px;
-        }
-    }
     button:hover,
     .mic:hover {
         background-color: var(--btnColor);
         color: var(--btnActive);
     }
-    .lang__switch:hover,
-    .lang__switch:focus,
-    .lang__switch:focus-within {
-        background-color: var(--btnColor);
-        select, svg {
-            color: var(--btnActive);
-            cursor: pointer;
+}
+.switch {
+    position: relative;
+    background-color: var(--btnBack);
+    color: var(--btnColor);
+    border-radius: 5px;
+    cursor: pointer;
+    .switch_select {
+        position: relative;
+        z-index: 1;
+        width: 60px;
+        height: 44px;
+        padding-left: 7px;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        appearance: none;
+        background-color: transparent;
+        border: none;
+        font-size: 18px;
+        color: var(--btnColor);
+        cursor: pointer;
+        option {
+            background-color: var(--btnBack);
+            color: var(--btnColor);
         }
+        option:checked,
+        option:hover { 
+            box-shadow: 0 0 10px 100px rgb(4, 30, 39) inset;
+        }
+    }
+    svg {
+        position: absolute;
+        font-size: .8rem;
+        top: 25%;
+        right: 5px;
+    }
+}
+.switch:hover,
+.switch:focus,
+.switch:focus-within {
+    background-color: var(--btnColor);
+    select, svg {
+        color: var(--btnActive);
+        cursor: pointer;
     }
 }
 .double-btn__container {
@@ -311,6 +312,7 @@ main {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    max-width: 95%;
 }
 .time {
     font-size: 20px;
@@ -318,6 +320,7 @@ main {
     margin-right: 10px;
 }
 .weather__box {
+    position: relative;
     width: 66%;
     max-width: 675px;
     background-color: #00000062;
@@ -329,6 +332,62 @@ main {
         width: 100px;
         height: 100px;
     }
+    .switch {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        background-color: transparent;
+        width: 91%;
+        .switch_select {
+            color: transparent;
+            width: 100%;
+        }
+        svg {
+            top: 19%;
+            right: 2px;
+            font-size: 1rem;
+            color: var(--btnBack);
+            transition: all .2s;
+        }
+    }
+    .switch_select:focus,
+    .switch_select:focus-within {
+        box-shadow: none;
+        outline: none;
+    }
+    .switch:hover {
+        background-color: #0000000e;
+        box-shadow: 0 0 1pt 1pt #000;
+    }
+    .city:hover {
+        font-size: 1.15rem;
+        transition: all .4s;
+        svg {
+            color: transparent;
+        } 
+    }
+}
+.pin__btn {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: 4px;
+    top: 4px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    color: #e2cc06;
+    background-color: transparent;
+    padding: 5px;
+    transition: all .2s;
+}
+.pin__btn:focus {
+    box-shadow: none;
+    outline: none;
+}
+.pin__btn:active {
+    transform: scale(.9);
 }
 .main__weather {
     display: flex;
@@ -616,6 +675,9 @@ main {
         justify-content: center;
         margin: 2px auto 20px;
     }
+    .switch svg {
+        top: 35%;
+    }
     .search__container form {
         justify-content: center;
         input {
@@ -725,18 +787,17 @@ main {
         justify-content: start;
         margin: 2px 0 10px;
     }
-    .lang__switch {
+    .switch {
         display: flex;
+        .switch_select,
+        svg {
+            font-size: 1rem;
+        }
     }
-    
     .header .btn__container > * {
         font-size: .8rem;
         line-height: .7rem;
         flex-wrap: nowrap;
-        .lang__switch .switch_select,
-        svg {
-            font-size: 1rem;
-        }
         .audio__play {
             line-height: .7rem;
         }

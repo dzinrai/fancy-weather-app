@@ -120,5 +120,8 @@
 
     "Unknown location": "Unknown location",
     "Something went wrong": "Something went wrong...",
-    "Background change is not yet available": "Background change is not yet available"
+    "Background change is not yet available": "Background change is not yet available",
+
+    "Pin this city": "Pin this city",
+    "Your chosen places": "Your chosen places..."
 }

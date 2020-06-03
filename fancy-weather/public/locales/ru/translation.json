@@ -121,5 +121,7 @@
     "Unknown location": "Местоположение не известно",
     "Something went wrong": "Что-то пошло не так...",
 
-    "Background change is not yet available": "Смена фона пока недоступна"
+    "Background change is not yet available": "Смена фона пока недоступна",
+    "Pin this city": "Добавить в избранное",
+    "Your chosen places": "Выбранные вами места..."
 }

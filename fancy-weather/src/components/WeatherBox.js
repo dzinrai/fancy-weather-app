@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactTooltip from 'react-tooltip';
@@ -8,10 +8,14 @@ import Icon from './Icon';
 import {ReactComponent as DayIcon} from '../img/static/day.svg';
 import {ReactComponent as NightIcon} from '../img/static/night.svg';
 import convertedUnits from '../assets/convertedUnits';
+import Button from './Button';
+import DropButton from './DropButton';
+import toStorage from '../assets/toStorage';
 
 function WeatherBox(props) {
-	const { t } = useTranslation();
-	const city = typeof props.cityInfo === 'string' ? props.cityInfo : '-';
+	const { t, i18n } = useTranslation();
+	const cityInfo = props.cityInfo;
+	const cityLine = cityInfo ? cityInfo[i18n.language] : 'City, Country';
 	const openData = props.openData;
 	const main = props.openData.main;
 	const units = props.units ? props.units : 'metric';
@@ -23,8 +27,27 @@ function WeatherBox(props) {
 	const nightTemp = openData.nightTemp ? openData.nightTemp : 0;
 	const description = (weather && weather.description) ? weather.description : 'few clouds';
 	//
+	const [pinned, setPinned] = useState(false);
+	const [pinnedValues, setPinnedValues] = useState(props.pinned);
+	useEffect(() => {
+		setPinned(toStorage(cityInfo, pinnedValues, i18n.language).has());
+		// eslint-disable-next-line
+	},[cityInfo]);
+	const pin = () => {
+		const store = toStorage(cityInfo, pinnedValues, i18n.language);
+		if (!pinned && !store.has() && !store.full()) {
+			const newPins = toStorage(cityInfo, pinnedValues, i18n.language).add();
+			setPinned(true);
+			setPinnedValues(newPins);
+		} else if (pinned && store.has()) {
+			const newPins = toStorage(cityInfo, pinnedValues, i18n.language).remove();
+			setPinned(false);
+			setPinnedValues(newPins);
+		}
+	};
+	//
 	const getIcon = (weatherT) => {
-		let icon = (weatherT && weatherT.icon) ? weatherT.icon : '---';
+		let icon = (weatherT && weatherT.icon) ? weatherT.icon : '01d';
 		if (weatherT && weatherT.description === 'light rain') icon = icon.concat('-light');
 		if (weatherT && weatherT.description === 'moderate rain') icon = icon.concat('-moderate');
 		return icon;
@@ -34,7 +57,23 @@ function WeatherBox(props) {
 
 	return (
 	<div className="weather__box">
-		<h2 className='city'>{city.toUpperCase()}</h2>
+		<h2 className='city'>
+			{cityLine.toUpperCase()}
+			<DropButton 
+				className='pinned__select'
+				values={pinnedValues}
+				cities={true}
+				changer={props.startSearch}
+				defaultValue={true}
+				icon='caret-left'
+			/>
+		</h2>
+		<Button 
+			className='pin__btn' 
+			icon={pinned ? ['fas', 'star'] : ['far', 'star']} 
+			onClick={pin}
+			tooltip={{text: t('Pin this city'), id: 'pin-this'}}
+		/>
 		<Day monthShow={true} className='time' />
 		<Clock countryTag={props.openData.countryTag} timezone={props.openData.timezone} />
 		<div className='main__weather'>

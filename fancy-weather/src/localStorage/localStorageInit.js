@@ -8,6 +8,7 @@ function localStorageInit() {
 	let night = localStorage.getItem('night');
 	let animationOn = localStorage.getItem('animationOn');
 	let i18nextLng = localStorage.getItem('i18nextLng');
+	let pinned = localStorage.getItem('pinned');
 	// defaults:
 	if (units === null) {
 		units = 'metric';
@@ -25,8 +26,22 @@ function localStorageInit() {
 		i18nextLng = 'en';
 		localStorage.setItem('i18nextLng', 'en');
 	}
+	if (pinned === null) {
+		//val1: {en:'', ru:'', by:''}
+		pinned = {
+			val0: null, 
+			val1: null, 
+			val2: null, 
+			val3: null, 
+			val4: null
+		};
+		localStorage.setItem('pinned', JSON.stringify(pinned));
+	} else {
+		pinned = JSON.parse(pinned);
+		console.log(pinned);
+	}
 	
-	const res = { units, night, animationOn, i18nextLng };
+	const res = { units, night, animationOn, i18nextLng, pinned };
 	[...Object.keys(res)].forEach((key) => {
 		res[key] = boolconvert(res[key]);
 	});
