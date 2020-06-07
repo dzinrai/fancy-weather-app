@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## [fancy-weather](https://dzinrai-fancy-weather.netlify.app)
 1. npm install
 2. npm start
