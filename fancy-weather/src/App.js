@@ -23,7 +23,7 @@ import Menu from './components/Menu';
 import {light, dark, setTheme} from './theme/theme.js';
 import DoubleButton from './components/DoubleButton';
 import countries from './countries';
-import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL, urlGeo, translateAPI } from './api/apiUrls';
+import { defaultBackground, weatherURL, weather3daysURL, backgroundsURL, urlGeo } from './api/apiUrls';
 import fetchAPI from './api/fetchAPI';
 import getDayTime from './assets/getDayTime.js';
 import getSeason from './assets/getSeason';
