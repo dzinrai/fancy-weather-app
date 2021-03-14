@@ -33,7 +33,7 @@ const getPlace = (lng, lat,lang='en') => {
 const translateAPI = (str, initLang, targetLang) => {
     const pair = initLang ? `${initLang}-${targetLang}` : targetLang;
     const prepStr = str;
-    return `https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20200506T113704Z.64e070cb5c691f68.0ab213249c3470faf758481f9a2bc04d3782b82c&text=${prepStr}&lang=${pair}`;
+    return `https://translate.yandex.net/api/v1.5/tr.json/translate?key=kekw&text=${prepStr}&lang=${pair}`;
 };
 
 export { defaultBackground, weatherURL, weather3daysURL, backgroundsURL, urlGeo, getPlace, getLoc, translateAPI };

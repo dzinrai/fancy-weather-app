@@ -61,7 +61,7 @@ function App(props) {
 	const [mapUpdated, setMapUpdated] = useState({update: false});
 	const [background, setBackground] = useState({
 		res: null, loaded: false, styles: {}
-	}); 
+	});
 	const [bgEnter, setBgEnter] = useState({styles: null});
 	const [preload, setPreload] = useState({
 		res: null, styles: {}, inProcess: true
@@ -208,13 +208,17 @@ function App(props) {
 	}
 	async function getCityInfo(cityLine) {
 		// translate city and country name on 3 languages
-		const cityArray = {};
-		const data1 = await fetchAPI(translateAPI(cityLine, null, 'en'), false);
-		cityArray.en =data1.text[0];
-		const data2 = await fetchAPI(translateAPI(cityLine, null, 'be'), true);
-		cityArray.by =data2.text[0];
-		const data3 = await fetchAPI(translateAPI(cityLine, null, 'ru'), true);
-		cityArray.ru =data3.text[0];
+		const cityArray = {
+			en: cityLine,
+			by: cityLine,
+			ru: cityLine,
+		};
+		// const data1 = await fetchAPI(translateAPI(cityLine, null, 'en'), false);
+		// cityArray.en =data1.text[0];
+		// const data2 = await fetchAPI(translateAPI(cityLine, null, 'be'), true);
+		// cityArray.by =data2.text[0];
+		// const data3 = await fetchAPI(translateAPI(cityLine, null, 'ru'), true);
+		// cityArray.ru =data3.text[0];
 		setDataUpdate((dataUpdate) => ({
 			...dataUpdate,
 			dataCityInfo: cityArray
