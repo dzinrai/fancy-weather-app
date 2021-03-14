@@ -29,10 +29,10 @@ function localStorageInit() {
 	if (pinned === null) {
 		//val1: {en:'', ru:'', by:''}
 		pinned = {
-			val0: null, 
-			val1: null, 
-			val2: null, 
-			val3: null, 
+			val0: null,
+			val1: null,
+			val2: null,
+			val3: null,
 			val4: null
 		};
 		localStorage.setItem('pinned', JSON.stringify(pinned));
@@ -40,7 +40,7 @@ function localStorageInit() {
 		pinned = JSON.parse(pinned);
 		console.log(pinned);
 	}
-	
+
 	const res = { units, night, animationOn, i18nextLng, pinned };
 	[...Object.keys(res)].forEach((key) => {
 		res[key] = boolconvert(res[key]);
